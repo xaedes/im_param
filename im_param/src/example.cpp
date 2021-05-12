@@ -77,4 +77,31 @@ int main(int argc, char **argv)
     //         "d": 5.0
     //     }
     // }    
+    
+    im_param::JsonDeserializerBackend jsonDeserializer(jsonSerializer.json_string());
+    im_param::parameter(jsonDeserializer, "foobar", foobar.params, im_param::TypeHolder<decltype(foobar)>());
+    std::cout << "jsonDeserializer.changed " << jsonDeserializer.changed << std::endl;
+
+    jsonDeserializer.parse("{\"foobar\": {\"a\": 6, \"bar\": {}}}");
+    im_param::parameter(jsonDeserializer, "foobar", foobar.params, im_param::TypeHolder<decltype(foobar)>());
+    std::cout << "jsonDeserializer.changed " << jsonDeserializer.changed << std::endl;
+    
+    jsonSerializer.clear();
+    im_param::parameter(jsonSerializer, "foobar", foobar.params, im_param::TypeHolder<decltype(foobar)>());
+    std::cout << jsonSerializer.json_string(4) << std::endl;
+
+    // Output:
+    // jsonDeserializer.changed 0
+    // jsonDeserializer.changed 1
+    // {
+    //     "foobar": {
+    //         "a": 6.0,
+    //         "b": 3,
+    //         "bar": {
+    //             "val": 1.0
+    //         },
+    //         "c": true,
+    //         "d": 5.0
+    //     }
+    // }    
 }
