@@ -1,6 +1,7 @@
 #include <iostream>
 #include "im_param/im_param.h"
 #include "im_param/backends/json_backend.h"
+#include "im_param/backends/glsl_struct_generator_backend.h"
 
 template<class T, int N>
 struct Vec
@@ -50,16 +51,7 @@ namespace im_param {
     >
     backend_type& parameter(backend_type& backend, const std::string& name, Vec<value_type, N>& value, Vec<value_type, N> min = 0, Vec<value_type, N> max = 1)
     {
-        
-        char component_labels[5] = "xyzw";
-        char component_label[2] = " ";
-
-        for(int i=0; i<(N<=4?N:4); ++i)
-        {
-            component_label[0] = component_labels[i];
-            auto _name = std::string(name) + std::string(".") + std::string(component_label);
-            backend.parameter(_name, value.values[i], min.values[i], max.values[i]);
-        }
+        backend.parameter(name, value.values, N, min.values, max.values);
         return backend;
     }
 
@@ -114,11 +106,13 @@ int main(int argc, char **argv)
     //         },
     //         "c": true,
     //         "d": 5.0,
-    //         "e.x": 6.0,
-    //         "e.y": 7.0,
-    //         "e.z": 8.0
+    //         "e": [
+    //             6.0,
+    //             7.0,
+    //             8.0
+    //         ]
     //     }
-    // }  
+    // }
     
     im_param::JsonDeserializerBackend jsonDeserializer(jsonSerializer.json_string());
     im_param::parameter(jsonDeserializer, "foobar", foobar.params, im_param::TypeHolder<decltype(foobar)>());
@@ -132,6 +126,7 @@ int main(int argc, char **argv)
     im_param::parameter(jsonSerializer, "foobar", foobar.params, im_param::TypeHolder<decltype(foobar)>());
     std::cout << jsonSerializer.json_string(4) << std::endl;
 
+
     // Output:
     // jsonDeserializer.changed 0
     // jsonDeserializer.changed 1
@@ -144,9 +139,33 @@ int main(int argc, char **argv)
     //         },
     //         "c": true,
     //         "d": 5.0,
-    //         "e.x": 6.0,
-    //         "e.y": 7.0,
-    //         "e.z": 8.0
+    //         "e": [
+    //             6.0,
+    //             7.0,
+    //             8.0
+    //         ]
     //     }
     // }
+     
+    
+    im_param::GlslStructGeneratorBackend glslStructGenerator;
+    im_param::parameter(glslStructGenerator, "foobar", foobar.params, im_param::TypeHolder<decltype(foobar)>());
+    std::cout << "glslStructGenerator.glsl_string() \n" << glslStructGenerator.glsl_string() << std::endl;
+
+    // Output:
+    // glslStructGenerator.glsl_string()
+    // foobar foobar;
+    // struct foobar
+    // {
+    //   bar bar;
+    //   float a;
+    //   int b;
+    //   bool c;
+    //   double d;
+    //   dvec3 e;
+    // };
+    // struct bar
+    // {
+    //   float val;
+    // };
 }

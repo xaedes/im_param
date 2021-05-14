@@ -50,7 +50,7 @@ namespace im_param {
     >
     backend_type& parameter(backend_type& backend, const std::string& name, value_type* ptr, size_type count, Args... args)
     {
-        return backend.parameter(name, value, ptr, count, std::forward<Args>(args)...);
+        return backend.parameter(name, ptr, count, std::forward<Args>(args)...);
     }
 
     #pragma endregion
