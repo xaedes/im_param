@@ -12,6 +12,41 @@ namespace im_param {
 
         #pragma region specializations for named parameters (sliders, checkboxes, ...)
         template<
+            typename value_type,
+            typename size_type = std::size_t,
+            typename A = value_type, typename B = value_type,
+            std::enable_if_t<Backend::is_specialized<value_type>::value, bool> = true
+        >
+        ImGuiBackend& parameter(const std::string& name, value_type* ptr, size_type count, A* min=nullptr, B* max=nullptr, const char* component_labels=nullptr)
+        {
+
+            const char default_component_labels[5] = "xyzw";
+            const char component_label[3] = ".?";
+            size_type num_component_labels = count;
+            if (component_labels == nullptr) 
+            {
+                component_labels = default_component_labels;
+                num_component_labels = 4;
+            }
+
+            std::string component_string;
+            for (int i=0; i<count; i++)
+            {
+                if (count <= num_component_labels)
+                {
+                    component_label[1] = component_labels[i];
+                    component_string = std::string(component_label) : 
+                }
+                else
+                {
+                    component_string = "[" + std::to_string(i) + "]";
+                }
+                this->parameter(name + component_string, ptr[i], min[i], max[i]);
+            }
+            return *this;
+        }
+
+        template<
             typename float_type,
             typename A = float_type, typename B = float_type,
             std::enable_if_t<std::is_floating_point<float_type>::value, bool> = true

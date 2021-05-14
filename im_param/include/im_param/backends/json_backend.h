@@ -31,36 +31,32 @@ namespace im_param {
 
         #pragma region specializations for named parameters (sliders, checkboxes, ...)
         template<
-            typename float_type,
-            typename A = float_type, typename B = float_type,
-            std::enable_if_t<std::is_floating_point<float_type>::value, bool> = true
+            typename value_type,
+            typename size_type = std::size_t,
+            class... Args,
+            std::enable_if_t<Backend::is_specialized<value_type>::value, bool> = true
         >
-        JsonSerializerBackend& parameter(const std::string& name, float_type& value, A min=0, B max=1)
+        JsonSerializerBackend& parameter(const std::string& name, value_type* ptr, size_type count, Args... args)
+        {
+            stack.back()[name] = nlohmann::json::array();
+            for (int i=0; i<count; i++)
+            {
+                stack.back()[name].emplace_back(ptr[i]);
+            }
+            return *this;
+        }
+
+        template<
+            typename value_type,
+            class... Args,
+            std::enable_if_t<Backend::is_specialized<value_type>::value, bool> = true
+        >
+        JsonSerializerBackend& parameter(const std::string& name, value_type& value, Args... args)
         {
             stack.back()[name] = value;
             return *this;
         }
 
-        template<
-            typename int_type,
-            typename A = int_type, typename B = int_type,
-            std::enable_if_t<Backend::is_non_bool_integral<int_type>::value, bool> = true
-        >
-        JsonSerializerBackend& parameter(const std::string& name, int_type& value, A min=0, B max=1)
-        {
-            stack.back()[name] = value;
-            return *this;
-        }
-
-        template<
-            typename bool_type,
-            std::enable_if_t<std::is_same<bool_type, bool>::value, bool> = true
-        >
-        JsonSerializerBackend& parameter(const std::string& name, bool_type& value)
-        {
-            stack.back()[name] = value;
-            return *this;
-        }
         #pragma endregion
 
         #pragma region specializations for named parameter container
@@ -111,11 +107,41 @@ namespace im_param {
 
         #pragma region specializations for named parameters (sliders, checkboxes, ...)
         template<
-            typename float_type,
-            typename A = float_type, typename B = float_type,
-            std::enable_if_t<std::is_floating_point<float_type>::value, bool> = true
+            typename value_type,
+            typename size_type = std::size_t,
+            class... Args,
+            std::enable_if_t<Backend::is_specialized<value_type>::value, bool> = true
         >
-        JsonDeserializerBackend& parameter(const std::string& name, float_type& value, A min=0, B max=1)
+        JsonDeserializerBackend& parameter(const std::string& name, value_type* ptr, size_type count, Args... args)
+        {
+            if (stack.back().count(name) && stack.back()[name].is_array())
+            {
+                auto deserialized_array = stack.back()[name];
+                size_type n = deserialized_array.size() < count ? deserialized_array.size() : count;
+                for (int i=0; i<n; i++)
+                {
+                    auto deserialized = deserialized_array[i];
+                    bool type_ok = (
+                        (std::is_same<bool, value_type>::value && deserialized.is_boolean())
+                     && (!std::is_same<bool, value_type>::value && std::is_arithmetic<value_type>::value && deserialized.is_number())
+                    );
+                    if (type_ok && (deserialized != ptr[i]))
+                    {
+                        ptr[i] = deserialized;  
+                        changed |= true;
+                    }
+                }                
+            }
+            return *this;
+        }
+
+
+        template<
+            typename value_type,
+            class... Args,
+            std::enable_if_t<Backend::is_specialized<value_type>::value, bool> = true
+        >
+        JsonDeserializerBackend& parameter(const std::string& name, value_type& value, Args... args)
         {
             if (stack.back().count(name))
             {
@@ -129,42 +155,7 @@ namespace im_param {
             return *this;
         }
 
-        template<
-            typename int_type,
-            typename A = int_type, typename B = int_type,
-            std::enable_if_t<Backend::is_non_bool_integral<int_type>::value, bool> = true
-        >
-        JsonDeserializerBackend& parameter(const std::string& name, int_type& value, A min=0, B max=1)
-        {
-            if (stack.back().count(name))
-            {
-                auto deserialized = stack.back()[name];
-                if (deserialized != value)
-                {
-                    value = deserialized;
-                    changed |= true;
-                }
-            }
-            return *this;
-        }
 
-        template<
-            typename bool_type,
-            std::enable_if_t<std::is_same<bool_type, bool>::value, bool> = true
-        >
-        JsonDeserializerBackend& parameter(const std::string& name, bool_type& value)
-        {
-            if (stack.back().count(name))
-            {
-                auto deserialized = stack.back()[name];
-                if (deserialized != value)
-                {
-                    value = deserialized;
-                    changed |= true;
-                }
-            }
-            return *this;
-        }
         #pragma endregion
 
         #pragma region specializations for named parameter container
@@ -209,11 +200,39 @@ namespace im_param {
 
         #pragma region specializations for named parameters (sliders, checkboxes, ...)
         template<
-            typename float_type,
-            typename A = float_type, typename B = float_type,
-            std::enable_if_t<std::is_floating_point<float_type>::value, bool> = true
+            typename value_type,
+            typename size_type = std::size_t,
+            class... Args,
+            std::enable_if_t<Backend::is_specialized<value_type>::value, bool> = true
         >
-        JsonStringStreamSerializerBackend& parameter(const std::string& name, float_type& value, A min=0, B max=1)
+        JsonStringStreamSerializerBackend& parameter(const std::string& name, value_type* ptr, size_type count, Args... args)
+        {
+            if (stack.back() > 0)  sstream << ", \n";
+            make_indent();
+            sstream << "'" << name << "': " << "[\n";
+
+            for (int i=0; i<count; i++)
+            {
+                if (i > 0)
+                {
+                    sstream << ", \n";
+                }
+                make_indent(+1);
+                sstream << ptr[i];
+            }
+            sstream << "\n";
+            make_indent();
+            sstream << "]";
+            return *this;
+        }
+
+
+        template<
+            typename value_type,
+            class... Args,
+            std::enable_if_t<Backend::is_specialized<value_type>::value, bool> = true
+        >
+        JsonStringStreamSerializerBackend& parameter(const std::string& name, value_type& value, Args... args)
         {
             if (stack.back() > 0)  sstream << ", \n";
             make_indent();
@@ -222,32 +241,6 @@ namespace im_param {
             return *this;
         }
 
-        template<
-            typename int_type,
-            typename A = int_type, typename B = int_type,
-            std::enable_if_t<Backend::is_non_bool_integral<int_type>::value, bool> = true
-        >
-        JsonStringStreamSerializerBackend& parameter(const std::string& name, int_type& value, A min=0, B max=1)
-        {
-            if (stack.back() > 0)  sstream << ", \n";
-            make_indent();
-            sstream << "'" << name << "': " << value;
-            stack.back()++;
-            return *this;
-        }
-
-        template<
-            typename bool_type,
-            std::enable_if_t<std::is_same<bool_type, bool>::value, bool> = true
-        >
-        JsonStringStreamSerializerBackend& parameter(const std::string& name, bool_type& value)
-        {
-            if (stack.back() > 0)  sstream << ", \n";
-            make_indent();
-            sstream << "'" << name << "': " << value;
-            stack.back()++;
-            return *this;
-        }
         #pragma endregion
 
         #pragma region specializations for named parameter container
@@ -268,9 +261,9 @@ namespace im_param {
         }
         #pragma endregion
     protected:
-        void make_indent()
+        void make_indent(int delta=0)
         {
-            for (int i =0; i < stack.size(); ++i)
+            for (int i =0; i < stack.size()+delta; ++i)
             {
                 sstream << indent;
             }
@@ -278,6 +271,6 @@ namespace im_param {
         std::vector<int> stack;
         std::ostringstream sstream;
         std::ostringstream sstream_done;
-        
     };
+    
 } // namespace im_param
