@@ -14,10 +14,12 @@ namespace im_param {
         template<
             typename value_type,
             typename size_type = std::size_t,
-            typename A = value_type, typename B = value_type,
+            typename A = value_type, 
+            typename B = value_type,
+            typename C = value_type,
             std::enable_if_t<Backend::is_specialized<value_type>::value, bool> = true
         >
-        ImGuiBackend& parameter(const std::string& name, value_type* ptr, size_type count, A* min=nullptr, B* max=nullptr, const char* component_labels=nullptr)
+        ImGuiBackend& parameter(const std::string& name, value_type* ptr, size_type count, A* min=nullptr, B* max=nullptr, C* unit_scale=nullptr, const char* component_labels=nullptr)
         {
 
             const char default_component_labels[5] = "xyzw";
@@ -41,30 +43,55 @@ namespace im_param {
                 {
                     component_string = "[" + std::to_string(i) + "]";
                 }
-                this->parameter(name + component_string, ptr[i], min[i], max[i]);
+                this->parameter(name + component_string, ptr[i], min ? min[i] : 0, max ? max[i] : 1, unit_scale ? unit_scale[i] : 1);
             }
             return *this;
         }
 
         template<
             typename float_type,
-            typename A = float_type, typename B = float_type,
+            typename A = float_type, 
+            typename B = float_type,
+            typename C = float_type,
             std::enable_if_t<std::is_floating_point<float_type>::value, bool> = true
         >
-        ImGuiBackend& parameter(const std::string& name, float_type& value, A min=0, B max=1)
+        ImGuiBackend& parameter(const std::string& name, float_type& value, A min=0, B max=1, C unit_scale=1)
         {
-            changed |= ImGuiSliderScalar<float_type>(name.c_str(), &value, min, max);
+            if (unit_scale == 1) changed |= ImGuiSliderScalar<float_type>(name.c_str(), &value, min, max);
+            else 
+            {
+                float_type value_scaled = value / unit_scale;
+                float_type min_scaled = min; // / unit_scale;
+                float_type max_scaled = max; // / unit_scale;
+                if(ImGuiSliderScalar<float_type>(name.c_str(), &value_scaled, min_scaled, max_scaled))
+                {
+                    changed = true;
+                    value = value_scaled * unit_scale;
+                }
+            }
             return *this;
         }
-
         template<
             typename int_type,
-            typename A = int_type, typename B = int_type,
+            typename A = int_type, 
+            typename B = int_type,
+            typename C = int_type,
             std::enable_if_t<Backend::is_non_bool_integral<int_type>::value, bool> = true
         >
-        ImGuiBackend& parameter(const std::string& name, int_type& value, A min=0, B max=1)
+        ImGuiBackend& parameter(const std::string& name, int_type& value, A min=0, B max=1, C unit_scale=1)
         {
-            changed |= ImGuiSliderScalar<int_type>(name.c_str(), &value, min, max);
+            if (unit_scale == 1) changed |= ImGuiSliderScalar<int_type>(name.c_str(), &value, min, max);
+            else 
+            {
+                C value_scaled = value / unit_scale;
+                C min_scaled = min; // / unit_scale;
+                C max_scaled = max; // / unit_scale;
+                if(ImGuiSliderScalar<C>(name.c_str(), &value_scaled, min_scaled, max_scaled))
+                {
+                    changed = true;
+                    value = static_cast<int_type>(value_scaled * unit_scale);
+                }
+            }
             return *this;
         }
 
@@ -81,7 +108,7 @@ namespace im_param {
 
         #pragma region specializations for named parameter container
         template<typename T, typename U, std::enable_if_t<!Backend::is_specialized<T>::value, bool> = true>
-        ImGuiBackend& parameter(const std::string& name, T& params, const U& typeholder, HierarchyType hierarchy_type = HierarchyType::Tree)
+        ImGuiBackend& parameter(const std::string& name, T& params, const TypeHolder<U>& typeholder, HierarchyType hierarchy_type = HierarchyType::Tree)
         {
             switch(hierarchy_type)
             {

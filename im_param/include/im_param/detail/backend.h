@@ -5,6 +5,10 @@
 
 namespace im_param {
 
+    // cant deduce arguments Args... for dependent types (e.g T<Args...>::type) of template specializations T<Args...>
+    // as a workaround use this TypeHolder class which holds the type of the template specialization T<Args...>.
+    template <class T> struct TypeHolder {};
+
     struct Backend {
         template <class T>
         struct is_non_bool_integral : public std::integral_constant<bool,
@@ -65,14 +69,12 @@ namespace im_param {
         typename... Args,
         std::enable_if_t<!Backend::is_specialized<value_type>::value, bool> = true
     >
-    backend_type& parameter(backend_type& backend, const std::string& name, value_type& params, const type_holder_type& typeholder, Args... args)
+    backend_type& parameter(backend_type& backend, const std::string& name, value_type& params, const TypeHolder<type_holder_type>& typeholder, Args... args)
     {
         return backend.parameter(name, params, typeholder, std::forward<Args>(args)...);
     }
     #pragma endregion
 
-    // cant deduce arguments Args... for dependent types (e.g T<Args...>::type) of template specializations T<Args...>
-    // as a workaround use this TypeHolder class which holds the type of the template specialization T<Args...>.
-    template <class T> struct TypeHolder {};
+
     
 } // namespace
