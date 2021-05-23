@@ -23,7 +23,7 @@ namespace im_param {
         {
 
             const char default_component_labels[5] = "xyzw";
-            const char component_label[3] = ".?";
+            char component_label[3] = ".?";
             size_type num_component_labels = count;
             if (component_labels == nullptr) 
             {
@@ -37,7 +37,7 @@ namespace im_param {
                 if (count <= num_component_labels)
                 {
                     component_label[1] = component_labels[i];
-                    component_string = std::string(component_label) : 
+                    component_string = std::string(component_label);
                 }
                 else
                 {
