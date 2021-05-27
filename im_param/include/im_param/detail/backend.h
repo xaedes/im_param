@@ -7,8 +7,8 @@ namespace im_param {
 
     // cant deduce arguments Args... for dependent types (e.g T<Args...>::type) of template specializations T<Args...>
     // as a workaround use this TypeHolder class which holds the type of the template specialization T<Args...>.
-    template <class T> struct TypeHolder {};
-
+    template <class T, class U=std::false_type> struct TypeHolder {};
+    
     struct Backend {
         template <class T>
         struct is_non_bool_integral : public std::integral_constant<bool,
@@ -76,5 +76,4 @@ namespace im_param {
     #pragma endregion
 
 
-    
 } // namespace
