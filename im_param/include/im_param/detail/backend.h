@@ -9,6 +9,9 @@ namespace im_param {
     // as a workaround use this TypeHolder class which holds the type of the template specialization T<Args...>.
     template <class T, class U=std::false_type> struct TypeHolder {};
     
+    template<class T>
+    using TypeHolderOf = TypeHolder<typename std::remove_reference<T>::type>;
+
     struct Backend {
         template <class T>
         struct is_non_bool_integral : public std::integral_constant<bool,
