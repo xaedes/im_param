@@ -1,6 +1,8 @@
 #pragma once
 
-#include "imgui.h"
+#include <vector>
+#include <imgui.h>
+#include "imgui_candy/imgui_candy.h"
 #include "im_param/detail/cpp11_template_logic.h"
 #include "im_param/detail/backend.h"
 
@@ -14,36 +16,32 @@ namespace im_param {
         template<
             typename value_type,
             typename size_type = std::size_t,
-            typename A = value_type, 
-            typename B = value_type,
-            typename C = value_type,
             std::enable_if_t<Backend::is_specialized<value_type>::value, bool> = true
         >
-        ImGuiBackend& parameter(const std::string& name, value_type* ptr, size_type count, A* min=nullptr, B* max=nullptr, C* unit_scale=nullptr, const char* component_labels=nullptr)
+        ImGuiBackend& parameter(
+            const std::string& name, 
+            value_type* ptr, 
+            size_type count, 
+            const value_type* min_scaled=nullptr, 
+            const value_type* max_scaled=nullptr, 
+            const value_type* unit_scale=nullptr
+        )
         {
-
-            const char default_component_labels[5] = "xyzw";
-            char component_label[3] = ".?";
-            size_type num_component_labels = count;
-            if (component_labels == nullptr) 
+            static std::vector<value_type> value_scaled;
+            // static std::vector<value_type> min_scaled;
+            // static std::vector<value_type> max_scaled;
+            value_scaled.resize(count);
+            for(size_type i=0; i<count; ++i)
             {
-                component_labels = default_component_labels;
-                num_component_labels = 4;
+                value_scaled[i]  = ptr[i] / unit_scale[i];
             }
-
-            std::string component_string;
-            for (int i=0; i<count; i++)
+            if(ImGuiSliderScalarN<value_type>(name.c_str(), &value_scaled[0], count, min_scaled, max_scaled))
             {
-                if (count <= num_component_labels)
+                changed = true;
+                for(size_type i=0; i<count; ++i)
                 {
-                    component_label[1] = component_labels[i];
-                    component_string = std::string(component_label);
+                    ptr[i]  = value_scaled[i] * unit_scale[i];
                 }
-                else
-                {
-                    component_string = "[" + std::to_string(i) + "]";
-                }
-                this->parameter(name + component_string, ptr[i], min ? min[i] : 0, max ? max[i] : 1, unit_scale ? unit_scale[i] : 1);
             }
             return *this;
         }
@@ -55,14 +53,14 @@ namespace im_param {
             typename C = float_type,
             std::enable_if_t<std::is_floating_point<float_type>::value, bool> = true
         >
-        ImGuiBackend& parameter(const std::string& name, float_type& value, A min=0, B max=1, C unit_scale=1)
+        ImGuiBackend& parameter(const std::string& name, float_type& value, A min_scaled=0, B max_scaled=1, C unit_scale=1)
         {
-            if (unit_scale == 1) changed |= ImGuiSliderScalar<float_type>(name.c_str(), &value, min, max);
+            if (unit_scale == 1) changed |= ImGuiSliderScalar<float_type>(name.c_str(), &value, min_scaled, max_scaled);
             else 
             {
                 float_type value_scaled = value / unit_scale;
-                float_type min_scaled = min; // / unit_scale;
-                float_type max_scaled = max; // / unit_scale;
+                // float_type min_scaled = min; // / unit_scale;
+                // float_type max_scaled = max; // / unit_scale;
                 if(ImGuiSliderScalar<float_type>(name.c_str(), &value_scaled, min_scaled, max_scaled))
                 {
                     changed = true;
@@ -78,14 +76,14 @@ namespace im_param {
             typename C = int_type,
             std::enable_if_t<Backend::is_non_bool_integral<int_type>::value, bool> = true
         >
-        ImGuiBackend& parameter(const std::string& name, int_type& value, A min=0, B max=1, C unit_scale=1)
+        ImGuiBackend& parameter(const std::string& name, int_type& value, A min_scaled=0, B max_scaled=1, C unit_scale=1)
         {
-            if (unit_scale == 1) changed |= ImGuiSliderScalar<int_type>(name.c_str(), &value, min, max);
+            if (unit_scale == 1) changed |= ImGuiSliderScalar<int_type>(name.c_str(), &value, min_scaled, max_scaled);
             else 
             {
                 C value_scaled = value / unit_scale;
-                C min_scaled = min; // / unit_scale;
-                C max_scaled = max; // / unit_scale;
+                // C min_scaled = min; // / unit_scale;
+                // C max_scaled = max; // / unit_scale;
                 if(ImGuiSliderScalar<C>(name.c_str(), &value_scaled, min_scaled, max_scaled))
                 {
                     changed = true;

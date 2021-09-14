@@ -26,6 +26,8 @@ target_include_directories(
 if (WITH_IMGUI_BACKEND)
     find_package(imgui REQUIRED)
     target_link_libraries(${PROJECT_NAME} INTERFACE imgui::imgui)
+
+    target_link_libraries(${PROJECT_NAME} INTERFACE imgui_candy)
 endif()
 
 if (BUILD_EXAMPLE)
