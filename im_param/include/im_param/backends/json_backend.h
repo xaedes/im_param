@@ -22,6 +22,11 @@ namespace im_param {
             stack = {nlohmann::json()};
         }
         
+        std::string serialized()
+        {
+            return json_string();
+        }
+        
         nlohmann::json& json() { return stack[0]; }
         std::string json_string(int indent = 0) 
         { 
@@ -60,8 +65,8 @@ namespace im_param {
         #pragma endregion
 
         #pragma region specializations for named parameter container
-        template<typename T, typename U, std::enable_if_t<!Backend::is_specialized<T>::value, bool> = true>
-        JsonSerializerBackend& parameter(const std::string& name, T& params, const U& typeholder, HierarchyType hierarchy_type = HierarchyType::Tree)
+        template<typename T, typename U, class... Args, std::enable_if_t<!Backend::is_specialized<T>::value, bool> = true>
+        JsonSerializerBackend& parameter(const std::string& name, T& params, const U& typeholder, Args... args)
         {
             stack.resize(stack.size()+1);
             im_param::parameter(*this, params, typeholder);
@@ -95,6 +100,12 @@ namespace im_param {
             stack = {nlohmann::json()};
             changed = false;
         }
+
+        void deserialize(const std::string& serialized_string)
+        {
+            parse(serialized_string);
+        }
+
         nlohmann::json& json() { return stack[0]; }
         nlohmann::json& parse(const std::string& json_str) 
         { 
@@ -159,8 +170,8 @@ namespace im_param {
         #pragma endregion
 
         #pragma region specializations for named parameter container
-        template<typename T, typename U, std::enable_if_t<!Backend::is_specialized<T>::value, bool> = true>
-        JsonDeserializerBackend& parameter(const std::string& name, T& params, const U& typeholder, HierarchyType hierarchy_type = HierarchyType::Tree)
+        template<typename T, typename U, class... Args, std::enable_if_t<!Backend::is_specialized<T>::value, bool> = true>
+        JsonDeserializerBackend& parameter(const std::string& name, T& params, const U& typeholder, Args... args)
         {
             if (stack.back().count(name))
             {
