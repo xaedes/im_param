@@ -123,7 +123,7 @@ namespace im_param {
                     auto deserialized = deserialized_array[i];
                     bool type_ok = (
                         (std::is_same<bool, value_type>::value && deserialized.is_boolean())
-                     && (!std::is_same<bool, value_type>::value && std::is_arithmetic<value_type>::value && deserialized.is_number())
+                     || (!std::is_same<bool, value_type>::value && std::is_arithmetic<value_type>::value && deserialized.is_number())
                     );
                     if (type_ok && (deserialized != ptr[i]))
                     {
