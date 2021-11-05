@@ -35,7 +35,12 @@ namespace im_param {
             {
                 value_scaled[i]  = ptr[i] / unit_scale[i];
             }
-            if(ImGuiSliderScalarN<value_type>(name.c_str(), &value_scaled[0], count, min_scaled, max_scaled))
+            if(ImGuiSliderScalarN<value_type>(
+                ImGuiCandy::append_id(name, &value_scaled[0]).c_str(), 
+                &value_scaled[0], 
+                count, 
+                min_scaled, max_scaled
+            ))
             {
                 changed = true;
                 for(size_type i=0; i<count; ++i)
@@ -55,13 +60,22 @@ namespace im_param {
         >
         ImGuiBackend& parameter(const std::string& name, float_type& value, A min_scaled=0, B max_scaled=1, C unit_scale=1)
         {
-            if (unit_scale == 1) changed |= ImGuiSliderScalar<float_type>(name.c_str(), &value, min_scaled, max_scaled);
+            if (unit_scale == 1) 
+            {
+                changed |= ImGuiSliderScalar<float_type>(
+                    ImGuiCandy::append_id(name, &value).c_str(), 
+                    &value, min_scaled, max_scaled
+                );
+            }
             else 
             {
                 float_type value_scaled = value / unit_scale;
                 // float_type min_scaled = min; // / unit_scale;
                 // float_type max_scaled = max; // / unit_scale;
-                if(ImGuiSliderScalar<float_type>(name.c_str(), &value_scaled, min_scaled, max_scaled))
+                if(ImGuiSliderScalar<float_type>(
+                    ImGuiCandy::append_id(name, &value_scaled).c_str(),
+                    &value_scaled, min_scaled, max_scaled
+                ))
                 {
                     changed = true;
                     value = value_scaled * unit_scale;
@@ -78,13 +92,22 @@ namespace im_param {
         >
         ImGuiBackend& parameter(const std::string& name, int_type& value, A min_scaled=0, B max_scaled=1, C unit_scale=1)
         {
-            if (unit_scale == 1) changed |= ImGuiSliderScalar<int_type>(name.c_str(), &value, min_scaled, max_scaled);
+            if (unit_scale == 1) 
+            {
+                changed |= ImGuiSliderScalar<int_type>(
+                    ImGuiCandy::append_id(name, &value).c_str(),
+                    &value, min_scaled, max_scaled
+                );
+            }
             else 
             {
                 C value_scaled = value / unit_scale;
                 // C min_scaled = min; // / unit_scale;
                 // C max_scaled = max; // / unit_scale;
-                if(ImGuiSliderScalar<C>(name.c_str(), &value_scaled, min_scaled, max_scaled))
+                if(ImGuiSliderScalar<C>(
+                    ImGuiCandy::append_id(name, &value_scaled).c_str(),
+                    &value_scaled, min_scaled, max_scaled
+                ))
                 {
                     changed = true;
                     value = static_cast<int_type>(value_scaled * unit_scale);
@@ -147,28 +170,28 @@ namespace im_param {
         #pragma endregion
 
         #pragma region templated imgui slider 
-        template <class T> ImGuiDataType ImGuiDataTypeOfPtr( T*   val );
-        template <> ImGuiDataType ImGuiDataTypeOfPtr( int8_t*   val ) { return ImGuiDataType_S8;     }
-        template <> ImGuiDataType ImGuiDataTypeOfPtr( uint8_t*  val ) { return ImGuiDataType_U8;     }
-        template <> ImGuiDataType ImGuiDataTypeOfPtr( int16_t*  val ) { return ImGuiDataType_S16;    }
-        template <> ImGuiDataType ImGuiDataTypeOfPtr( uint16_t* val ) { return ImGuiDataType_U16;    }
-        template <> ImGuiDataType ImGuiDataTypeOfPtr( int32_t*  val ) { return ImGuiDataType_S32;    }
-        template <> ImGuiDataType ImGuiDataTypeOfPtr( uint32_t* val ) { return ImGuiDataType_U32;    }
-        template <> ImGuiDataType ImGuiDataTypeOfPtr( int64_t*  val ) { return ImGuiDataType_S64;    }
-        template <> ImGuiDataType ImGuiDataTypeOfPtr( uint64_t* val ) { return ImGuiDataType_U64;    }
-        template <> ImGuiDataType ImGuiDataTypeOfPtr( float*    val ) { return ImGuiDataType_Float;  }
-        template <> ImGuiDataType ImGuiDataTypeOfPtr( double*   val ) { return ImGuiDataType_Double; }
+        // template <class T> ImGuiDataType ImGuiDataTypeOfPtr( T*   val );
+        // template <> ImGuiDataType ImGuiDataTypeOfPtr( int8_t*   val ) { return ImGuiDataType_S8;     }
+        // template <> ImGuiDataType ImGuiDataTypeOfPtr( uint8_t*  val ) { return ImGuiDataType_U8;     }
+        // template <> ImGuiDataType ImGuiDataTypeOfPtr( int16_t*  val ) { return ImGuiDataType_S16;    }
+        // template <> ImGuiDataType ImGuiDataTypeOfPtr( uint16_t* val ) { return ImGuiDataType_U16;    }
+        // template <> ImGuiDataType ImGuiDataTypeOfPtr( int32_t*  val ) { return ImGuiDataType_S32;    }
+        // template <> ImGuiDataType ImGuiDataTypeOfPtr( uint32_t* val ) { return ImGuiDataType_U32;    }
+        // template <> ImGuiDataType ImGuiDataTypeOfPtr( int64_t*  val ) { return ImGuiDataType_S64;    }
+        // template <> ImGuiDataType ImGuiDataTypeOfPtr( uint64_t* val ) { return ImGuiDataType_U64;    }
+        // template <> ImGuiDataType ImGuiDataTypeOfPtr( float*    val ) { return ImGuiDataType_Float;  }
+        // template <> ImGuiDataType ImGuiDataTypeOfPtr( double*   val ) { return ImGuiDataType_Double; }
 
-        template<typename T>
-        bool ImGuiSliderScalar(const char* label, T* p_data, const void* p_min, const void* p_max, const char* format = NULL, ImGuiSliderFlags flags = 0)
-        {
-            return ImGui::SliderScalar(label, ImGuiDataTypeOfPtr(p_data), p_data, p_min, p_max, format, flags);
-        }
-        template<typename T>
-        bool ImGuiSliderScalar(const char* label, T* p_data, T p_min, T p_max, const char* format = NULL, ImGuiSliderFlags flags = 0)
-        {
-            return ImGuiSliderScalar(label, p_data, &p_min, &p_max, format, flags);
-        }
+        // // template<typename T>
+        // // bool ImGuiSliderScalar(const char* label, T* p_data, const void* p_min, const void* p_max, const char* format = NULL, ImGuiSliderFlags flags = 0)
+        // // {
+        // //     return ImGui::SliderScalar(label, ImGuiDataTypeOfPtr(p_data), p_data, p_min, p_max, format, flags);
+        // // }
+        // // template<typename T>
+        // // bool ImGuiSliderScalar(const char* label, T* p_data, T p_min, T p_max, const char* format = NULL, ImGuiSliderFlags flags = 0)
+        // // {
+        // //     return ImGuiSliderScalar(label, p_data, &p_min, &p_max, format, flags);
+        // // }
         #pragma endregion
 
     };
