@@ -15,6 +15,7 @@ namespace im_param {
         #pragma region specializations for named parameters (sliders, checkboxes, ...)
         template<
             typename value_type,
+            typename float_type,
             typename size_type = std::size_t,
             std::enable_if_t<Backend::is_specialized<value_type>::value, bool> = true
         >
@@ -22,33 +23,35 @@ namespace im_param {
             const std::string& name, 
             value_type* ptr, 
             size_type count, 
-            const value_type* min_scaled=nullptr, 
-            const value_type* max_scaled=nullptr, 
-            const value_type* unit_scale=nullptr
+            const float_type* min_scaled=nullptr, 
+            const float_type* max_scaled=nullptr, 
+            const float_type* unit_scale=nullptr
         )
         {
-            static std::vector<value_type> value_scaled;
-            // static std::vector<value_type> min_scaled;
-            // static std::vector<value_type> max_scaled;
-            value_scaled.resize(count);
-            for(size_type i=0; i<count; ++i)
+            bool scale_one = true;
+            for (int i=0; i<count; i++)
             {
-                value_scaled[i]  = ptr[i] / unit_scale[i];
-            }
-            if(ImGuiSliderScalarN<value_type>(
-                ImGuiCandy::append_id(name, &value_scaled[0]).c_str(), 
-                &value_scaled[0], 
-                count, 
-                min_scaled, max_scaled
-            ))
-            {
-                changed = true;
-                for(size_type i=0; i<count; ++i)
+                if (unit_scale[i] != 1)
                 {
-                    ptr[i]  = value_scaled[i] * unit_scale[i];
+                    scale_one = false;
+                    break;
                 }
             }
-            return *this;
+            if (scale_one) 
+            {
+                changed |= ImGuiSliderScalarN<float_type>(
+                    ImGuiCandy::append_id(name, ptr).c_str(), 
+                    ptr, count, min_scaled, max_scaled
+                );
+            }
+            else 
+            {
+                changed |= ImGuiSliderScaledScalarN<float_type>(
+                    ImGuiCandy::append_id(name, ptr).c_str(), 
+                    ptr, count, unit_scale, min_scaled, max_scaled
+                );
+            }
+            return *this; 
         }
 
         template<
@@ -69,17 +72,10 @@ namespace im_param {
             }
             else 
             {
-                float_type value_scaled = value / unit_scale;
-                // float_type min_scaled = min; // / unit_scale;
-                // float_type max_scaled = max; // / unit_scale;
-                if(ImGuiSliderScalar<float_type>(
-                    ImGuiCandy::append_id(name, &value_scaled).c_str(),
-                    &value_scaled, min_scaled, max_scaled
-                ))
-                {
-                    changed = true;
-                    value = value_scaled * unit_scale;
-                }
+                changed |= ImGuiSliderScaledScalar<float_type>(
+                    ImGuiCandy::append_id(name, &value).c_str(), 
+                    &value, unit_scale, static_cast<C>(min_scaled), static_cast<C>(max_scaled)
+                );
             }
             return *this;
         }
@@ -101,17 +97,10 @@ namespace im_param {
             }
             else 
             {
-                C value_scaled = value / unit_scale;
-                // C min_scaled = min; // / unit_scale;
-                // C max_scaled = max; // / unit_scale;
-                if(ImGuiSliderScalar<C>(
-                    ImGuiCandy::append_id(name, &value_scaled).c_str(),
-                    &value_scaled, min_scaled, max_scaled
-                ))
-                {
-                    changed = true;
-                    value = static_cast<int_type>(value_scaled * unit_scale);
-                }
+                changed |= ImGuiSliderScaledScalar<int_type>(
+                    ImGuiCandy::append_id(name, &value).c_str(),
+                    &value, unit_scale, static_cast<C>(min_scaled), static_cast<C>(max_scaled)
+                );
             }
             return *this;
         }
