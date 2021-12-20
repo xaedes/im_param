@@ -1,0 +1,32 @@
+title im_param sequence diagram
+
+#participant "yourfile.cpp" as YF
+#participant "im_param_yourstruct.h" as YS
+#participant "im_param/backend.h\nim_param::parameter(\n  backend, name,\n  yourstruct, typeholder)" as BEYS
+#participant "im_param/backend.h\nim_param::parameter(\n    backend, name,\n    base_value, *args)" as BEV
+#participant "im_param/backends/json_backend.h\nbackend_type::parameter(name,\n    obj, typeholder)" as JSG
+#participant "im_param/backends/json_backend.h\nim_param::parameter(\n  backend, name,\n    base_value, *args)" as JSV
+
+participant "yourfile.cpp" as YF
+participant "im_param/backend.h\nim_param::parameter(\n  backend, name,\n  yourstruct, typeholder)" as BEYS
+participant "im_param/backends/json_backend.h\nbackend_type::parameter(name,\n    obj, typeholder)" as JSG
+participant "im_param_yourstruct.h" as YS
+participant "im_param/backend.h\nim_param::parameter(\n    backend, name,\n    base_value, *args)" as BEV
+participant "im_param/backends/json_backend.h\nim_param::parameter(\n  backend, name,\n    base_value, *args)" as JSV
+
+autoactivation on
+
+YF->BEYS:call
+BEYS->JSG:call
+JSG->YS:call
+YS->BEV:call
+BEV->JSV:call
+BEV<--JSV:
+YS<--BEV:
+YS->BEV:call
+BEV->JSV:call
+BEV<--JSV:
+YS<--BEV:
+JSG<--YS:
+BEYS<--JSG:
+YF<--BEYS:
