@@ -12,12 +12,13 @@ namespace im_param {
 
         bool changed = false;
 
-        #pragma region specializations for named parameters (sliders, checkboxes, ...)
+        #pragma region specializations for named parameter multi channel values (floats, ints, bools, etc)
+        // ImGuiBackend: named parameter multi channel values (floats, ints, bools, etc)
         template<
             typename value_type,
             typename float_type,
             typename size_type = std::size_t,
-            std::enable_if_t<Backend::is_specialized<value_type>::value, bool> = true
+            std::enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
         >
         ImGuiBackend& parameter(
             const std::string& name, 
@@ -53,7 +54,10 @@ namespace im_param {
             }
             return *this; 
         }
+        #pragma endregion
 
+        #pragma region specializations for named parameter values (floats, ints, bools, etc)
+        // ImGuiBackend: named parameter floats values
         template<
             typename float_type,
             typename A = float_type, 
@@ -79,6 +83,8 @@ namespace im_param {
             }
             return *this;
         }
+
+        // ImGuiBackend: named parameter int values
         template<
             typename int_type,
             typename A = int_type, 
@@ -105,6 +111,7 @@ namespace im_param {
             return *this;
         }
 
+        // ImGuiBackend: named parameter bool values
         template<
             typename bool_type,
             std::enable_if_t<std::is_same<bool_type, bool>::value, bool> = true
@@ -117,7 +124,8 @@ namespace im_param {
         #pragma endregion
 
         #pragma region specializations for named parameter container
-        template<typename T, typename U, std::enable_if_t<!Backend::is_specialized<T>::value, bool> = true>
+        // ImGuiBackend: named parameter container
+        template<typename T, typename U, std::enable_if_t<!Backend::is_base_value<T>::value, bool> = true>
         ImGuiBackend& parameter(const std::string& name, T& params, const TypeHolder<U>& typeholder, HierarchyType hierarchy_type = HierarchyType::Tree)
         {
             switch(hierarchy_type)
@@ -158,30 +166,232 @@ namespace im_param {
         }
         #pragma endregion
 
-        #pragma region templated imgui slider 
-        // template <class T> ImGuiDataType ImGuiDataTypeOfPtr( T*   val );
-        // template <> ImGuiDataType ImGuiDataTypeOfPtr( int8_t*   val ) { return ImGuiDataType_S8;     }
-        // template <> ImGuiDataType ImGuiDataTypeOfPtr( uint8_t*  val ) { return ImGuiDataType_U8;     }
-        // template <> ImGuiDataType ImGuiDataTypeOfPtr( int16_t*  val ) { return ImGuiDataType_S16;    }
-        // template <> ImGuiDataType ImGuiDataTypeOfPtr( uint16_t* val ) { return ImGuiDataType_U16;    }
-        // template <> ImGuiDataType ImGuiDataTypeOfPtr( int32_t*  val ) { return ImGuiDataType_S32;    }
-        // template <> ImGuiDataType ImGuiDataTypeOfPtr( uint32_t* val ) { return ImGuiDataType_U32;    }
-        // template <> ImGuiDataType ImGuiDataTypeOfPtr( int64_t*  val ) { return ImGuiDataType_S64;    }
-        // template <> ImGuiDataType ImGuiDataTypeOfPtr( uint64_t* val ) { return ImGuiDataType_U64;    }
-        // template <> ImGuiDataType ImGuiDataTypeOfPtr( float*    val ) { return ImGuiDataType_Float;  }
-        // template <> ImGuiDataType ImGuiDataTypeOfPtr( double*   val ) { return ImGuiDataType_Double; }
+        #pragma region specializations for named list of parameter containers
+        // ImGuiBackend: named list of parameter containers
+        template<
+            class collection_type,
+            class value_type,
+            class value_iterator_type,
+            class inserter_iterator_type,
+            class type_holder_type,
+            class... Args,
+            std::enable_if_t<!Backend::is_base_value<value_type>::value, bool> = true
 
-        // // template<typename T>
-        // // bool ImGuiSliderScalar(const char* label, T* p_data, const void* p_min, const void* p_max, const char* format = NULL, ImGuiSliderFlags flags = 0)
-        // // {
-        // //     return ImGui::SliderScalar(label, ImGuiDataTypeOfPtr(p_data), p_data, p_min, p_max, format, flags);
-        // // }
-        // // template<typename T>
-        // // bool ImGuiSliderScalar(const char* label, T* p_data, T p_min, T p_max, const char* format = NULL, ImGuiSliderFlags flags = 0)
-        // // {
-        // //     return ImGuiSliderScalar(label, p_data, &p_min, &p_max, format, flags);
-        // // }
+            // typename T, 
+            // typename I, 
+            // typename U, 
+            // std::enable_if_t<!Backend::is_base_value<T>::value, bool> = true
+        >
+        ImGuiBackend& parameter(
+            const std::string& name, 
+            Collection<collection_type,value_type,value_iterator_type,inserter_iterator_type>& collection, 
+            TypeHolder<type_holder_type> typeholder,
+            HierarchyType list_hierarchy_type = HierarchyType::Tree,
+            HierarchyType item_hierarchy_type = HierarchyType::Tree,
+            Args... args
+
+            // const std::string& name, T&& begin, T&& end, I&& inserter, 
+            // const TypeHolder<U>& typeholder, 
+            // HierarchyType list_type = HierarchyType::Tree,
+            // HierarchyType hierarchy_type = HierarchyType::Tree
+        )
+        {
+            auto begin = collection.begin();
+            auto end = collection.end();
+            switch(list_hierarchy_type)
+            {
+            case HierarchyType::Flat:
+            {
+                ImGui::Text(name.c_str());
+                for (auto it = begin; it != end; ++it)
+                {
+                    im_param::parameter(*this, *it, typeholder, item_hierarchy_type);
+                }
+            }
+            break;
+            case HierarchyType::CollapsingHeader:
+            {
+                if (ImGui::CollapsingHeader(name.c_str()))
+                {
+                    for (auto it = begin; it != end; ++it)
+                    {
+                        im_param::parameter(*this, *it, typeholder, item_hierarchy_type);
+                    }
+                }
+            }
+            break;
+            case HierarchyType::Tree:
+            {
+                if (ImGui::TreeNode(name.c_str()))
+                {
+                    for (auto it = begin; it != end; ++it)
+                    {
+                        im_param::parameter(*this, *it, typeholder, item_hierarchy_type);
+                    }
+
+                    ImGui::TreePop();
+                }
+            }
+            break;
+            default:
+                throw std::runtime_error("not implemented");
+            }
+
+            return *this;
+        }
         #pragma endregion
+
+        #pragma region specializations for named list of parameter values (floats, ints, bools, etc)
+        // ImGuiBackend: named list of parameter values (floats, ints, bools, etc)
+        template<
+            class collection_type,
+            class value_type,
+            class value_iterator_type,
+            class inserter_iterator_type,
+            class... Args,
+            std::enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
+
+            // typename T, 
+            // typename I, 
+            // typename U, 
+            // std::enable_if_t<!Backend::is_base_value<T>::value, bool> = true
+        >
+        ImGuiBackend& parameter(
+            const std::string& name, 
+            Collection<collection_type,value_type,value_iterator_type,inserter_iterator_type>& collection, 
+            HierarchyType list_hierarchy_type = HierarchyType::Tree,
+            Args... args
+
+            // const std::string& name, T&& begin, T&& end, I&& inserter, 
+            // const TypeHolder<U>& typeholder, 
+            // HierarchyType list_type = HierarchyType::Tree,
+            // HierarchyType hierarchy_type = HierarchyType::Tree
+        )
+        {
+            auto begin = collection.begin();
+            auto end = collection.end();
+            int index = 0;
+            switch(list_hierarchy_type)
+            {
+            case HierarchyType::Flat:
+            {
+                ImGui::Text(name.c_str());
+                for (auto it = begin; it != end; ++it, ++index)
+                {
+                    im_param::parameter(*this, std::to_string(index), *it);
+                }
+            }
+            break;
+            case HierarchyType::CollapsingHeader:
+            {
+                if (ImGui::CollapsingHeader(name.c_str()))
+                {
+                    for (auto it = begin; it != end; ++it, ++index)
+                    {
+                        im_param::parameter(*this, std::to_string(index), *it);
+                    }
+                }
+            }
+            break;
+            case HierarchyType::Tree:
+            {
+                if (ImGui::TreeNode(name.c_str()))
+                {
+                    for (auto it = begin; it != end; ++it, ++index)
+                    {
+                        im_param::parameter(*this, std::to_string(index), *it);
+                    }
+                    ImGui::TreePop();
+                }
+            }
+            break;
+            default:
+                throw std::runtime_error("not implemented");
+            }
+
+            return *this;
+        }
+        #pragma endregion
+
+        #pragma region specializations for named list of parameter multi channel values (floats, ints, bools, etc)
+        // ImGuiBackend: named list of parameter multi channel values (floats, ints, bools, etc)
+        template<
+            class collection_type,
+            class value_type,
+            class value_iterator_type,
+            class inserter_iterator_type,
+            class callback_type,
+            class size_type = std::size_t,
+            class... Args
+            // std::enable_if_t<!Backend::is_base_value<value_type>::value, bool> = true
+
+            // typename T, 
+            // typename I, 
+            // typename U, 
+            // std::enable_if_t<!Backend::is_base_value<T>::value, bool> = true
+        >
+        ImGuiBackend& parameter(
+            const std::string& name, 
+            Collection<collection_type,value_type,value_iterator_type,inserter_iterator_type>& collection, 
+            callback_type callback_get_first_val,
+            size_type num_channels, 
+            HierarchyType list_hierarchy_type = HierarchyType::Tree,
+            Args... args
+
+            // const std::string& name, T&& begin, T&& end, I&& inserter, 
+            // const TypeHolder<U>& typeholder, 
+            // HierarchyType list_type = HierarchyType::Tree,
+            // HierarchyType hierarchy_type = HierarchyType::Tree
+        )
+        {
+            auto begin = collection.begin();
+            auto end = collection.end();
+            int index = 0;
+            switch(list_hierarchy_type)
+            {
+            case HierarchyType::Flat:
+            {
+                ImGui::Text(name.c_str());
+                for (auto it = begin; it != end; ++it, ++index)
+                {
+                    auto* ptr = callback_get_first_val(*it);
+                    im_param::parameter(*this, std::to_string(index), *ptr, num_channels);
+                }
+            }
+            break;
+            case HierarchyType::CollapsingHeader:
+            {
+                if (ImGui::CollapsingHeader(name.c_str()))
+                {
+                    for (auto it = begin; it != end; ++it, ++index)
+                    {
+                        auto* ptr = callback_get_first_val(*it);
+                        im_param::parameter(*this, std::to_string(index), *ptr, num_channels);
+                    }
+                }
+            }
+            break;
+            case HierarchyType::Tree:
+            {
+                if (ImGui::TreeNode(name.c_str()))
+                {
+                    for (auto it = begin; it != end; ++it, ++index)
+                    {
+                        auto* ptr = callback_get_first_val(*it);
+                        im_param::parameter(*this, std::to_string(index), *ptr, num_channels);
+                    }
+                    ImGui::TreePop();
+                }
+            }
+            break;
+            default:
+                throw std::runtime_error("not implemented");
+            }
+
+            return *this;
+        }
+        #pragma endregion
+
 
     };
 

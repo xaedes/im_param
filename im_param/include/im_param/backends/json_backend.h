@@ -34,12 +34,13 @@ namespace im_param {
             return indent ? json.dump(indent) : json.dump();
         }
 
-        #pragma region specializations for named parameters (sliders, checkboxes, ...)
+        #pragma region specializations for named parameter multi channel values (floats, ints, bools, etc)
+        // JsonSerializerBackend: named parameter multi channel values (floats, ints, bools, etc)
         template<
             typename value_type,
             typename size_type = std::size_t,
             class... Args,
-            std::enable_if_t<Backend::is_specialized<value_type>::value, bool> = true
+            std::enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
         >
         JsonSerializerBackend& parameter(const std::string& name, value_type* ptr, size_type count, Args... args)
         {
@@ -50,25 +51,34 @@ namespace im_param {
             }
             return *this;
         }
+        #pragma endregion
 
+        #pragma region specializations for named parameter values (floats, ints, bools, etc)
+        // JsonSerializerBackend: named parameter values (floats, ints, bools, etc)
         template<
             typename value_type,
             class... Args,
-            std::enable_if_t<Backend::is_specialized<value_type>::value, bool> = true
+            std::enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
         >
         JsonSerializerBackend& parameter(const std::string& name, value_type& value, Args... args)
         {
             stack.back()[name] = value;
             return *this;
         }
-
         #pragma endregion
 
         #pragma region specializations for named parameter container
-        template<typename T, typename U, class... Args, std::enable_if_t<!Backend::is_specialized<T>::value, bool> = true>
-        JsonSerializerBackend& parameter(const std::string& name, T& params, const U& typeholder, Args... args)
+        // JsonSerializerBackend: named parameter container
+        template<
+            typename T, 
+            typename U, 
+            class... Args, 
+            std::enable_if_t<!Backend::is_base_value<T>::value, bool> = true
+        >
+        JsonSerializerBackend& parameter(
+            const std::string& name, T& params, const TypeHolder<U>& typeholder, Args... args)
         {
-            stack.resize(stack.size()+1);
+            stack.emplace_back();
             im_param::parameter(*this, params, typeholder);
             stack[stack.size()-2][name] = stack.back();
             stack.pop_back();
@@ -76,6 +86,104 @@ namespace im_param {
             return *this;
         }
         #pragma endregion
+
+        #pragma region specializations for named list of parameter containers
+        // JsonSerializerBackend: named list of parameter containers
+        template<
+            class collection_type,
+            class value_type,
+            class value_iterator_type,
+            class inserter_iterator_type,
+            class type_holder_type,
+            class... Args,
+            std::enable_if_t<!Backend::is_base_value<value_type>::value, bool> = true
+        >
+        JsonSerializerBackend& parameter(
+            const std::string& name, 
+            Collection<collection_type,value_type,value_iterator_type,inserter_iterator_type>& collection, 
+            TypeHolder<type_holder_type> typeholder,
+            Args... args
+        )
+        {
+            stack.back()[name] = nlohmann::json::array();
+            auto& arr = stack.back()[name];
+            stack.emplace_back();
+            for(auto it = collection.begin(); it != collection.end(); ++it)
+            {
+                stack.back() = nlohmann::json();
+                im_param::parameter(*this, *it, typeholder);
+                arr.emplace_back(stack.back());
+            }
+            stack.pop_back();
+            return *this;
+        }
+        #pragma endregion
+
+        #pragma region specializations for named list of parameter multi channel values (floats, ints, bools, etc)
+        // JsonSerializerBackend: named list of parameter multi channel values (floats, ints, bools, etc)
+        template<
+            class collection_type,
+            class value_type,
+            class value_iterator_type,
+            class inserter_iterator_type,
+            class callback_type,
+            class size_type = std::size_t,
+            class... Args
+            // std::enable_if_t<Backend::is_base_value<return_type<callback_type>>::value, bool> = true
+            // std::enable_if_t<!Backend::is_base_value<value_type>::value, bool> = true
+        >
+        JsonSerializerBackend& parameter(
+            const std::string& name, 
+            Collection<collection_type,value_type,value_iterator_type,inserter_iterator_type>& collection, 
+            callback_type callback_get_first_val,
+            size_type num_channels, 
+            Args... args
+        )
+        {
+            stack.back()[name] = nlohmann::json::array();
+            auto& arr = stack.back()[name];
+            for(auto it = collection.begin(); it != collection.end(); ++it)
+            {
+                auto values = nlohmann::json::array();
+                const auto* ptr = callback_get_first_val(*it);
+                for (int i=0; i<num_channels; i++)
+                {
+                    values.emplace_back(ptr[i]);
+                }
+                arr.emplace_back(values);
+            }
+
+            return *this;
+        }
+        #pragma endregion
+
+        #pragma region specializations for named list of parameter values (floats, ints, bools, etc)
+        // JsonSerializerBackend: named list of parameter values (floats, ints, bools, etc)
+        template<
+            class collection_type,
+            class value_type,
+            class value_iterator_type,
+            class inserter_iterator_type,
+            class... Args,
+            std::enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
+        >
+        JsonSerializerBackend& parameter(
+            const std::string& name, 
+            Collection<collection_type,value_type,value_iterator_type,inserter_iterator_type>& collection, 
+            Args... args
+        )
+        {
+            stack.back()[name] = nlohmann::json::array();
+            auto& arr = stack.back()[name];
+            for(auto it = collection.begin(); it != collection.end(); ++it)
+            {
+                arr.emplace_back(*it);
+            }
+            return *this;
+        }
+
+        #pragma endregion
+
     protected:
 
         std::vector<nlohmann::json> stack;
@@ -116,41 +224,73 @@ namespace im_param {
         
         bool changed = false;
 
-        #pragma region specializations for named parameters (sliders, checkboxes, ...)
+        #pragma region protected members
+    protected:
+        template<class value_type, class T>
+        bool is_type_ok(T& deserialized)
+        {
+            return (
+                (std::is_same<bool, value_type>::value && deserialized.is_boolean())
+             || (!std::is_same<bool, value_type>::value && std::is_arithmetic<value_type>::value && deserialized.is_number())
+            );
+        }
+        template<class value_type, class T, class U>
+        bool deserialize_base_value(T& deserialized, U ptr)
+        {
+            if (is_type_ok<value_type>(deserialized))
+            {
+                *ptr = deserialized;  
+                return true;
+            }
+            return false;
+        }
+        template<class value_type, class T, class U, class S>
+        bool deserialize_base_values(T& deserialized_array, U ptr, S num_channels)
+        {
+            S n = deserialized_array.size() < num_channels ? deserialized_array.size() : num_channels;
+            bool changed = false;
+            for (S i=0; i<n; i++)
+            {
+                auto& deserialized = deserialized_array[i];
+                if (is_type_ok<value_type>(deserialized))
+                {
+                    changed |= (deserialized != *ptr);
+                    *ptr = deserialized;
+                }
+                ++ptr;
+            }
+            return changed;
+        }
+        #pragma endregion
+        
+    public:
+
+        #pragma region specializations for named parameter multi channel values (floats, ints, bools, etc)
+        // JsonDeserializerBackend: named parameter multi channel values (floats, ints, bools, etc)
         template<
             typename value_type,
             typename size_type = std::size_t,
             class... Args,
-            std::enable_if_t<Backend::is_specialized<value_type>::value, bool> = true
+            std::enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
         >
-        JsonDeserializerBackend& parameter(const std::string& name, value_type* ptr, size_type count, Args... args)
+        JsonDeserializerBackend& parameter(const std::string& name, value_type* ptr, size_type num_channels, Args... args)
         {
             if (stack.back().count(name) && stack.back()[name].is_array())
             {
                 auto deserialized_array = stack.back()[name];
-                size_type n = deserialized_array.size() < count ? deserialized_array.size() : count;
-                for (int i=0; i<n; i++)
-                {
-                    auto deserialized = deserialized_array[i];
-                    bool type_ok = (
-                        (std::is_same<bool, value_type>::value && deserialized.is_boolean())
-                     || (!std::is_same<bool, value_type>::value && std::is_arithmetic<value_type>::value && deserialized.is_number())
-                    );
-                    if (type_ok && (deserialized != ptr[i]))
-                    {
-                        ptr[i] = deserialized;  
-                        changed |= true;
-                    }
-                }                
+                changed |= deserialize_base_values<value_type>(deserialized_array, ptr, num_channels);
             }
             return *this;
         }
 
+        #pragma endregion
 
+        #pragma region specializations for named parameter values (floats, ints, bools, etc)
+        // JsonDeserializerBackend: named parameter values (floats, ints, bools, etc)
         template<
             typename value_type,
             class... Args,
-            std::enable_if_t<Backend::is_specialized<value_type>::value, bool> = true
+            std::enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
         >
         JsonDeserializerBackend& parameter(const std::string& name, value_type& value, Args... args)
         {
@@ -170,7 +310,8 @@ namespace im_param {
         #pragma endregion
 
         #pragma region specializations for named parameter container
-        template<typename T, typename U, class... Args, std::enable_if_t<!Backend::is_specialized<T>::value, bool> = true>
+        // JsonDeserializerBackend: named parameter container
+        template<typename T, typename U, class... Args, std::enable_if_t<!Backend::is_base_value<T>::value, bool> = true>
         JsonDeserializerBackend& parameter(const std::string& name, T& params, const U& typeholder, Args... args)
         {
             if (stack.back().count(name))
@@ -183,6 +324,153 @@ namespace im_param {
             return *this;
         }
         #pragma endregion
+
+        #pragma region specializations for named list of parameter containers
+        // JsonDeserializerBackend: named list of parameter containers
+        template<
+            class collection_type,
+            class value_type,
+            class value_iterator_type,
+            class inserter_iterator_type,
+            class type_holder_type,
+            class... Args,
+            std::enable_if_t<!Backend::is_base_value<value_type>::value, bool> = true
+        >
+        JsonDeserializerBackend& parameter(
+            const std::string& name, 
+            Collection<collection_type,value_type,value_iterator_type,inserter_iterator_type>& collection, 
+            TypeHolder<type_holder_type> typeholder,
+            Args... args
+        )
+        {
+            if (stack.back().count(name) && stack.back()[name].is_array())
+            {
+                auto& deserialized_array = stack.back()[name];
+
+                // save copy of items to which we can compare the new items
+                // to know whether values actually changed.
+                // could be more efficient, but it should be ok for now.
+                auto old_items = collection.collection; 
+                std::size_t deserialized_size = deserialized_array.size();
+                std::size_t old_size = collection.size();
+                collection.clear();
+                auto inserter = collection.inserter();
+                value_type empty_value;
+                for(std::size_t i = 0; i < deserialized_size; ++i)
+                {
+                    // reuse old items (they may contain important data that is not processed by this call)
+                    value_type* value = (i < old_items.size()) ? &(old_items[i]) : &empty_value;
+
+                    stack.push_back(deserialized_array[i]);
+                    im_param::parameter(*this, *value, typeholder);
+                    stack.pop_back();
+
+                    *inserter = *value;
+                    ++inserter;
+                }
+                changed |= old_size != collection.size();
+            }
+
+            return *this;
+        }
+        #pragma endregion
+
+        #pragma region specializations for named list of parameter multi channel values (floats, ints, bools, etc)
+        // JsonDeserializerBackend: named list of parameter multi channel values (floats, ints, bools, etc)
+        template<
+            class collection_type,
+            class value_type,
+            class value_iterator_type,
+            class inserter_iterator_type,
+            class callback_type,
+            class size_type = std::size_t,
+            class... Args
+            // std::enable_if_t<Backend::is_base_value<return_type<callback_type>>::value, bool> = true
+            // std::enable_if_t<!Backend::is_base_value<value_type>::value, bool> = true
+        >
+        JsonDeserializerBackend& parameter(
+            const std::string& name, 
+            Collection<collection_type,value_type,value_iterator_type,inserter_iterator_type>& collection, 
+            callback_type callback_get_first_val,
+            size_type num_channels, 
+            Args... args
+        )
+        {
+            if (stack.back().count(name) && stack.back()[name].is_array())
+            {
+                auto deserialized_array = stack.back()[name];
+
+                // save copy of items to which we can compare the new items
+                // to know whether values actually changed.
+                // could be more efficient, but it should be ok for now.
+                auto old_items = collection.collection; 
+                std::size_t deserialized_size = deserialized_array.size();
+                std::size_t old_size = collection.size();
+                collection.clear();
+                auto inserter = collection.inserter();
+                value_type empty_value;
+                for(std::size_t i = 0; i < deserialized_size; ++i)
+                {
+                    // reuse old items (they may contain important data that is not processed by this call)
+                    value_type* value = (i < old_items.size()) ? &(old_items[i]) : &empty_value;
+                    auto* ptr = callback_get_first_val(*value);
+                    using base_value_type = std::remove_pointer_t<decltype(ptr)>;
+                    changed |= (deserialize_base_values<base_value_type>(deserialized_array[i], ptr, num_channels));
+                    *inserter = *value;
+                    ++inserter;
+                }
+                changed |= old_size != collection.size();
+            }
+
+            return *this;
+        }
+        #pragma endregion
+
+        #pragma region specializations for named list of parameter values (floats, ints, bools, etc)
+        // JsonDeserializerBackend: named list of parameter values (floats, ints, bools, etc)
+        template<
+            class collection_type,
+            class value_type,
+            class value_iterator_type,
+            class inserter_iterator_type,
+            class... Args,
+            std::enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
+        >
+        JsonDeserializerBackend& parameter(
+            const std::string& name, 
+            Collection<collection_type,value_type,value_iterator_type,inserter_iterator_type>& collection, 
+            Args... args
+        )
+        {
+            if (stack.back().count(name) && stack.back()[name].is_array())
+            {
+                auto deserialized_array = stack.back()[name];
+
+                // save copy of items to which we can compare the new items
+                // to know whether values actually changed.
+                // could be more efficient, but it should be ok for now.
+                auto old_items = collection.collection; 
+                std::size_t deserialized_size = deserialized_array.size();
+                std::size_t old_size = collection.size();
+                collection.clear();
+                auto inserter = collection.inserter();
+                for(std::size_t i = 0; i < deserialized_size; ++i)
+                {
+                    if (deserialize_base_value<value_type>(deserialized_array[i], inserter))
+                    {
+                        ++inserter;
+                    }
+                }
+                changed = old_items != collection.collection;
+            }
+
+            return *this;
+        }
+
+        
+        #pragma endregion
+
+
     protected:
 
         std::vector<nlohmann::json> stack;
@@ -209,12 +497,12 @@ namespace im_param {
         }
         std::string indent = "  ";
 
-        #pragma region specializations for named parameters (sliders, checkboxes, ...)
+        #pragma region specializations for named parameters (floats, ints, bools, etc)
         template<
             typename value_type,
             typename size_type = std::size_t,
             class... Args,
-            std::enable_if_t<Backend::is_specialized<value_type>::value, bool> = true
+            std::enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
         >
         JsonStringStreamSerializerBackend& parameter(const std::string& name, value_type* ptr, size_type count, Args... args)
         {
@@ -241,7 +529,7 @@ namespace im_param {
         template<
             typename value_type,
             class... Args,
-            std::enable_if_t<Backend::is_specialized<value_type>::value, bool> = true
+            std::enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
         >
         JsonStringStreamSerializerBackend& parameter(const std::string& name, value_type& value, Args... args)
         {
@@ -255,7 +543,7 @@ namespace im_param {
         #pragma endregion
 
         #pragma region specializations for named parameter container
-        template<typename T, typename U, std::enable_if_t<!Backend::is_specialized<T>::value, bool> = true>
+        template<typename T, typename U, std::enable_if_t<!Backend::is_base_value<T>::value, bool> = true>
         JsonStringStreamSerializerBackend& parameter(const std::string& name, T& params, const U& typeholder, HierarchyType hierarchy_type = HierarchyType::Tree)
         {
             if (stack.back() > 0)  sstream << ", \n";
