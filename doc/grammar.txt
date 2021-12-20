@@ -1,0 +1,57 @@
+
+# to be called from parameter descriptions:
+# overloads for specific types of values may be used, which then call these functions here.
+NamedBaseValue(backend, name, value, *args)                     = backend.NamedBaseValue(name, value, *args)
+NamedBaseValues(backend, name, ptr, cnt, *args)                 = backend.NamedBaseValues(name, ptr, cnt, *args)
+NamedGroup(backend, name, obj, th)                              = backend.NamedGroup(name, obj, th)
+NamedBaseValueList(backend, name, items, *args)                 = backend.NamedBaseValueList(name, items, *args)
+NamedBaseValuesList(backend, name, items, fst_item, cnt, *args) = backend.NamedBaseValuesList(name, items, fst_item, cnt, *args)
+NamedGroupList(backend, name, items, th)                        = backend.NamedGroupList(name, items, th)
+NamedList(backend, name, items, *args)=(
+    backend.NamedBaseValueList(name, items, *args)
+  | backend.NamedBaseValuesList(name, items, *args)
+  | backend.NamedGroupList(name, items, *args)
+)
+
+# backend implementation:
+private: Object(backend, obj, th) = {**ObjectDescription(backend, obj, th)}
+private: backend.BaseValue(value, *args) = value
+private: backend.BaseValues(ptr, cnt, *args)                   = [backend.BaseValue(ptr[0], *args)..backend.BaseValue(ptr[cnt-1], *args)]
+backend.NamedBaseValue(name, value, *args)                     = name, backend.BaseValue(value, *args)
+backend.NamedBaseValues(name, ptr, cnt, *args)                 = name, backend.BaseValues(ptr, cnt, name, *args)
+backend.NamedGroup(name, obj, th)                              = name:Object(backend, obj, th)
+backend.NamedBaseValueList(name, items, *args)                 = name:[backend.BaseValue(value, *args) for value in items]
+backend.NamedBaseValuesList(name, items, fst_item, cnt, *args) = name:[backend.BaseValues(fst_item(item), cnt, *args) for item in items]
+backend.NamedGroupList(name, items)                            = name:[Object(backend, obj) for obj in items]
+
+# own parameter descriptions:
+NamedBaseValuesDescription(backend, name, values, *args)    = NamedBaseValues(backend, name, &values[0], values.size(), *args)
+NamedBaseValuesListDescription(backend, name, items, *args) = NamedBaseValuesList(backend, name, [](values){return &values[0]}, values.size())
+ObjectDescription(backend, obj, th) = Sequence( 
+  (NamedBaseValue(backend, name, attr) | NamedGroup(name, attr) | NamedList(name, attr)) 
+  for name, attr in obj 
+)
+
+
+# not defined, as they collide with type signatures of own parameter descriptions 
+#BaseValue(backend, value)=backend.NamedBaseValue(name, value)
+#Group(backend, obj)=backend.Group(obj)
+#List(backend, items)=backend.List(items)
+#BaseValues(backend, ptr, cnt)                            | im_param::parameter(backend_type, T*, size_type);
+
+NamedBaseValue(backend, name, value)                     | im_param::parameter(backend_type, const std::string&, T&);
+NamedBaseValues(backend, name, ptr, cnt)                 | im_param::parameter(backend_type, const std::string&, T*, size_type);
+NamedGroup(backend, name, obj, th)                       | im_param::parameter(backend_type, const std::string&, T&, TypeHolder);
+NamedBaseValueList(backend, name, items)                 | im_param::parameter(backend_type, const std::string&, Collection& collection);
+NamedBaseValuesList(backend, name, items, fst_item, cnt) | im_param::parameter(backend_type, const std::string&, Collection& collection, Callback first_item, size_type count);
+NamedGroupList(backend, name, items, th)                 | im_param::parameter(backend_type, const std::string&, Collection& collection, TypeHolder);
+                                                         | 
+backend.NamedBaseValue(name, value)                      | backend_type::parameter(const std::string&, T&);
+backend.NamedBaseValues(name, ptr, cnt)                  | backend_type::parameter(const std::string&, T*, size_type num_channels);
+backend.NamedGroup(name, obj, th)                        | backend_type::parameter(const std::string&, T&, TypeHolder);
+backend.NamedBaseValueList(name, items)                  | backend_type::parameter(const std::string&, Collection& collection);
+backend.NamedBaseValuesList(name, items, fst_item, cnt)  | backend_type::parameter(const std::string&, Collection& collection, Callback first_item, size_type num_channels);
+backend.NamedGroupList(name, items)                      | backend_type::parameter(const std::string&, Collection& collection, TypeHolder);
+                                                         | 
+BaseValuesDescription(backend, values)                   | im_param::parameter(backend_type, T&);
+ObjectDescription(backend, obj, th)                      | im_param::parameter(backend_type, T&, TypeHolder);
