@@ -128,7 +128,8 @@ namespace im_param {
             class inserter_iterator_type,
             class callback_type,
             class size_type = std::size_t,
-            class... Args
+            class... Args,
+            std::enable_if_t<!Backend::is_type_holder<callback_type>::value, bool> = true
             // std::enable_if_t<Backend::is_base_value<return_type<callback_type>>::value, bool> = true
             // std::enable_if_t<!Backend::is_base_value<value_type>::value, bool> = true
         >
@@ -384,7 +385,9 @@ namespace im_param {
             class inserter_iterator_type,
             class callback_type,
             class size_type = std::size_t,
-            class... Args
+            class... Args,
+            std::enable_if_t<!Backend::is_type_holder<callback_type>::value, bool> = true
+
             // std::enable_if_t<Backend::is_base_value<return_type<callback_type>>::value, bool> = true
             // std::enable_if_t<!Backend::is_base_value<value_type>::value, bool> = true
         >

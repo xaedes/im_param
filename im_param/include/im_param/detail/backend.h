@@ -36,6 +36,12 @@ namespace im_param {
         >
         {};
 
+        template <class T>
+        struct is_type_holder : public std::integral_constant<bool, false> {};
+        
+        template <class T, class U>
+        struct is_type_holder<TypeHolder<T,U>> : public std::integral_constant<bool, true> {};
+
         //[[deprecated]]
         template <class T> using is_specialized = is_base_value<T>;
     };
@@ -96,8 +102,8 @@ namespace im_param {
         typename callback_type,
         // typename value_type,
         typename size_type = std::size_t,
-        typename... Args
-        // std::enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
+        typename... Args,
+        std::enable_if_t<!Backend::is_type_holder<callback_type>::value, bool> = true
     >
     backend_type& parameter(
         backend_type& backend, 

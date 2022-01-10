@@ -322,7 +322,9 @@ namespace im_param {
             class inserter_iterator_type,
             class callback_type,
             class size_type = std::size_t,
-            class... Args
+            class... Args,
+            std::enable_if_t<!Backend::is_type_holder<callback_type>::value, bool> = true
+
             // std::enable_if_t<!Backend::is_base_value<value_type>::value, bool> = true
 
             // typename T, 
@@ -336,7 +338,8 @@ namespace im_param {
             callback_type callback_get_first_val,
             size_type num_channels, 
             HierarchyType list_hierarchy_type = HierarchyType::Tree,
-            Args... args
+            Args... args,
+            std::enable_if_t<!Backend::is_type_holder<callback_type>::value, bool> = true
 
             // const std::string& name, T&& begin, T&& end, I&& inserter, 
             // const TypeHolder<U>& typeholder, 
