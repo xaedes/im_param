@@ -196,27 +196,93 @@ namespace im_param {
             // HierarchyType hierarchy_type = HierarchyType::Tree
         )
         {
-            auto begin = collection.begin();
-            auto end = collection.end();
+            auto iter_items = [this, &collection, typeholder, item_hierarchy_type](){
+                static thread_local bool show_erase = false;
+                if (ImGui::Button(ImGuiCandy::append_id("add", &collection).c_str()))
+                {
+                    *collection.inserter() = value_type();
+                    changed |= true;
+                }
+                ImGui::SameLine();
+                ImGui::Checkbox(
+                    ImGuiCandy::append_id("erase items",&show_erase).c_str(), 
+                    &show_erase
+                );
+                auto begin = collection.begin();
+                auto end = collection.end();
+                auto it = begin;
+                while (it != end)
+                {
+
+                    static thread_local bool dont_ask_me_next_time = false;
+
+                    bool erase_it = false;
+                    if (show_erase && ImGui::Button(ImGuiCandy::append_id("erase", &*it).c_str()))
+                    {
+                        if (!dont_ask_me_next_time)
+                        {
+                            ImGui::OpenPopup(ImGuiCandy::append_id("Confirm erase",&*it).c_str());
+                        }
+                        else
+                        {
+                            erase_it = true;
+                        }
+                    }
+                    if (ImGui::BeginPopupModal(ImGuiCandy::append_id("Confirm erase", &*it).c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize))
+                    {
+                        ImGui::Text("Do you really want to erase this item?");
+                        ImGui::Separator();
+
+                        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+                        ImGui::Checkbox(
+                            ImGuiCandy::append_id("Don't ask me next time",&dont_ask_me_next_time).c_str(), 
+                            &dont_ask_me_next_time
+                        );
+                        ImGui::PopStyleVar();
+
+                        if (ImGui::Button("Confirm", ImVec2(120, 0)))
+                        {
+                            erase_it = true;
+                            ImGui::CloseCurrentPopup();
+                        }
+                        ImGui::SameLine();
+                        if (ImGui::Button("Cancel", ImVec2(120, 0))) 
+                        {
+                            erase_it = false;
+                            dont_ask_me_next_time = false;
+                            ImGui::CloseCurrentPopup();
+                        }
+                        ImGui::SetItemDefaultFocus();
+                        ImGui::EndPopup();
+
+                    }
+                    if (erase_it)
+                    {
+                        it = collection.erase(it);
+                        end = collection.end();
+                        changed |= true;
+                        continue;
+                    }
+
+                    im_param::parameter(*this, *it, typeholder, item_hierarchy_type);
+                    ++it;
+                }
+
+            };
+
             switch(list_hierarchy_type)
             {
             case HierarchyType::Flat:
             {
                 ImGui::Text(name.c_str());
-                for (auto it = begin; it != end; ++it)
-                {
-                    im_param::parameter(*this, *it, typeholder, item_hierarchy_type);
-                }
+                iter_items();
             }
             break;
             case HierarchyType::CollapsingHeader:
             {
                 if (ImGui::CollapsingHeader(name.c_str()))
                 {
-                    for (auto it = begin; it != end; ++it)
-                    {
-                        im_param::parameter(*this, *it, typeholder, item_hierarchy_type);
-                    }
+                    iter_items();
                 }
             }
             break;
@@ -224,10 +290,7 @@ namespace im_param {
             {
                 if (ImGui::TreeNode(name.c_str()))
                 {
-                    for (auto it = begin; it != end; ++it)
-                    {
-                        im_param::parameter(*this, *it, typeholder, item_hierarchy_type);
-                    }
+                    iter_items();
 
                     ImGui::TreePop();
                 }
@@ -236,7 +299,6 @@ namespace im_param {
             default:
                 throw std::runtime_error("not implemented");
             }
-
             return *this;
         }
         #pragma endregion

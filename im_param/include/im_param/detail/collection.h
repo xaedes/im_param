@@ -38,6 +38,7 @@ namespace im_param {
         insert_iterator_type inserter()   { return std::back_inserter(collection); }
         void                 clear()      { return collection.clear();             }
         std::size_t          size() const { return collection.size();              }
+        iterator_type        erase(iterator_type item) { return collection.erase(item); }
     };
 
 } // namespace im_param
