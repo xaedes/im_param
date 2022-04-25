@@ -186,8 +186,8 @@ namespace im_param {
             const std::string& name, 
             Collection<collection_type,value_type,value_iterator_type,inserter_iterator_type>& collection, 
             TypeHolder<type_holder_type> typeholder,
-            HierarchyType list_hierarchy_type = HierarchyType::Tree,
-            HierarchyType item_hierarchy_type = HierarchyType::Tree,
+            HierarchyType list_hierarchy_type,
+            HierarchyType item_hierarchy_type,
             Args... args
 
             // const std::string& name, T&& begin, T&& end, I&& inserter, 
@@ -301,6 +301,65 @@ namespace im_param {
             }
             return *this;
         }
+
+
+        // ImGuiBackend: named list of parameter containers 
+        // with default value for item_hierarchy_type = HierarchyType::Tree
+        template<
+            class collection_type,
+            class value_type,
+            class value_iterator_type,
+            class inserter_iterator_type,
+            class type_holder_type,
+            class... Args,
+            std::enable_if_t<!Backend::is_base_value<value_type>::value, bool> = true
+        >
+        ImGuiBackend& parameter(
+            const std::string& name, 
+            Collection<collection_type,value_type,value_iterator_type,inserter_iterator_type>& collection, 
+            TypeHolder<type_holder_type> typeholder,
+            HierarchyType list_hierarchy_type,
+            Args... args
+        )
+        {
+            parameter(
+                name, 
+                collection, 
+                typeholder, 
+                list_hierarchy_type, 
+                HierarchyType::Tree,
+                std::forward<Args>(args)...
+            );
+        }
+
+        // ImGuiBackend: named list of parameter containers 
+        // with default value for list_hierarchy_type = HierarchyType::Tree
+        // with default value for item_hierarchy_type = HierarchyType::Tree
+        template<
+            class collection_type,
+            class value_type,
+            class value_iterator_type,
+            class inserter_iterator_type,
+            class type_holder_type,
+            class... Args,
+            std::enable_if_t<!Backend::is_base_value<value_type>::value, bool> = true
+        >
+        ImGuiBackend& parameter(
+            const std::string& name, 
+            Collection<collection_type,value_type,value_iterator_type,inserter_iterator_type>& collection, 
+            TypeHolder<type_holder_type> typeholder,
+            Args... args
+        )
+        {
+            parameter(
+                name, 
+                collection, 
+                typeholder, 
+                HierarchyType::Tree,
+                HierarchyType::Tree,
+                std::forward<Args>(args)...
+            );
+        }
         #pragma endregion
 
         #pragma region specializations for named list of parameter values (floats, ints, bools, etc)
@@ -321,7 +380,7 @@ namespace im_param {
         ImGuiBackend& parameter(
             const std::string& name, 
             Collection<collection_type,value_type,value_iterator_type,inserter_iterator_type>& collection, 
-            HierarchyType list_hierarchy_type = HierarchyType::Tree,
+            HierarchyType list_hierarchy_type,
             Args... args
 
             // const std::string& name, T&& begin, T&& end, I&& inserter, 
@@ -373,6 +432,30 @@ namespace im_param {
 
             return *this;
         }
+
+        // ImGuiBackend: named list of parameter values (floats, ints, bools, etc)
+        // with default value for list_hierarchy_type = HierarchyType::Tree
+        template<
+            class collection_type,
+            class value_type,
+            class value_iterator_type,
+            class inserter_iterator_type,
+            class... Args,
+            std::enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
+        >
+        ImGuiBackend& parameter(
+            const std::string& name, 
+            Collection<collection_type,value_type,value_iterator_type,inserter_iterator_type>& collection, 
+            Args... args
+        )
+        {
+            parameter(
+                name, 
+                collection, 
+                HierarchyType::Tree,
+                std::forward<Args>(args)...
+            );
+        }
         #pragma endregion
 
         #pragma region specializations for named list of parameter multi channel values (floats, ints, bools, etc)
@@ -399,9 +482,9 @@ namespace im_param {
             Collection<collection_type,value_type,value_iterator_type,inserter_iterator_type>& collection, 
             callback_type callback_get_first_val,
             size_type num_channels, 
-            HierarchyType list_hierarchy_type = HierarchyType::Tree,
-            Args... args,
-            std::enable_if_t<!Backend::is_type_holder<callback_type>::value, bool> = true
+            HierarchyType list_hierarchy_type,
+            Args... args
+            // std::enable_if_t<!Backend::is_type_holder<callback_type>::value, bool> = true
 
             // const std::string& name, T&& begin, T&& end, I&& inserter, 
             // const TypeHolder<U>& typeholder, 
@@ -455,6 +538,37 @@ namespace im_param {
 
             return *this;
         }
+
+        // ImGuiBackend: named list of parameter multi channel values (floats, ints, bools, etc)
+        // with default value for list_hierarchy_type = HierarchyType::Tree
+        template<
+            class collection_type,
+            class value_type,
+            class value_iterator_type,
+            class inserter_iterator_type,
+            class callback_type,
+            class size_type = std::size_t,
+            class... Args,
+            std::enable_if_t<!Backend::is_type_holder<callback_type>::value, bool> = true
+        >
+        ImGuiBackend& parameter(
+            const std::string& name, 
+            Collection<collection_type,value_type,value_iterator_type,inserter_iterator_type>& collection, 
+            callback_type callback_get_first_val,
+            size_type num_channels, 
+            Args... args
+        )
+        {
+            parameter(
+                name, 
+                collection, 
+                callback_get_first_val,
+                num_channels, 
+                HierarchyType::Tree,
+                std::forward<Args>(args)...
+            );
+        }
+
         #pragma endregion
 
 
