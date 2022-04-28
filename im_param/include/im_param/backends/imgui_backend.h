@@ -198,6 +198,7 @@ namespace im_param {
         {
             auto iter_items = [this, &collection, typeholder, item_hierarchy_type](){
                 static thread_local bool show_erase = false;
+                static thread_local bool show_move = false;
                 if (ImGui::Button(ImGuiCandy::append_id("add", &collection).c_str()))
                 {
                     *collection.inserter() = value_type();
@@ -208,24 +209,54 @@ namespace im_param {
                     ImGuiCandy::append_id("erase items",&show_erase).c_str(), 
                     &show_erase
                 );
+                ImGui::SameLine();
+                ImGui::Checkbox(
+                    ImGuiCandy::append_id("move items",&show_move).c_str(), 
+                    &show_move
+                );
                 auto begin = collection.begin();
                 auto end = collection.end();
                 auto it = begin;
+                auto prev = end;
                 while (it != end)
                 {
 
                     static thread_local bool dont_ask_me_next_time = false;
 
                     bool erase_it = false;
-                    if (show_erase && ImGui::Button(ImGuiCandy::append_id("erase", &*it).c_str()))
+                    bool has_button = false;
+                    if (show_erase)
                     {
-                        if (!dont_ask_me_next_time)
+                        has_button = true;
+                        if (ImGui::Button(ImGuiCandy::append_id("erase", &*it).c_str()))
                         {
-                            ImGui::OpenPopup(ImGuiCandy::append_id("Confirm erase",&*it).c_str());
+                            if (!dont_ask_me_next_time)
+                            {
+                                ImGui::OpenPopup(ImGuiCandy::append_id("Confirm erase",&*it).c_str());
+                            }
+                            else
+                            {
+                                erase_it = true;
+                            }
                         }
-                        else
+                    }
+                    if (show_move && (prev != end))
+                    {
+                        if (has_button) ImGui::SameLine();
+                        has_button = true;
+                        if (ImGui::Button(ImGuiCandy::append_id("move up", &*it).c_str()))
                         {
-                            erase_it = true;
+                            std::swap(*prev, *it);
+                        }
+                    }
+                    auto next = ((it + 1) != end) ? (it + 1) : begin;
+                    if (show_move && (next != begin))
+                    {
+                        if (has_button) ImGui::SameLine();
+                        has_button = true;
+                        if (ImGui::Button(ImGuiCandy::append_id("move down", &*it).c_str()))
+                        {
+                            std::swap(*next, *it);
                         }
                     }
                     if (ImGui::BeginPopupModal(ImGuiCandy::append_id("Confirm erase", &*it).c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize))
@@ -265,6 +296,8 @@ namespace im_param {
                     }
 
                     im_param::parameter(*this, *it, typeholder, item_hierarchy_type);
+                    ImGui::Separator();
+                    prev = it;
                     ++it;
                 }
 
