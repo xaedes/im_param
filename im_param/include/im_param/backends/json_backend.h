@@ -480,7 +480,7 @@ namespace im_param {
         
     };
 
-
+    // [deprecated] use JsonSerializerBackend instead
     struct JsonStringStreamSerializerBackend {
         JsonStringStreamSerializerBackend()
         {
