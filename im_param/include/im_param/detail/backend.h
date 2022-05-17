@@ -31,7 +31,8 @@ namespace im_param {
             disjunction<
                 std::is_floating_point<T>,
                 is_non_bool_integral<T>,
-                std::is_same<T, bool>
+                std::is_same<T, bool>,
+                std::is_same<T, std::string>
             >::value
         >
         {};
@@ -46,9 +47,9 @@ namespace im_param {
         template <class T> using is_specialized = is_base_value<T>;
     };
 
-    #pragma region specializations for named parameter values (floats, ints, bools, etc)
+    #pragma region specializations for named parameter values (floats, ints, bools, strings, etc)
 
-    // named parameter multi channel values (floats, ints, bools, etc)
+    // named parameter multi channel values (floats, ints, bools, strings, etc)
     template<
         typename backend_type,
         typename value_type,
@@ -61,7 +62,7 @@ namespace im_param {
         return backend.parameter(name, ptr, count, std::forward<Args>(args)...);
     }
 
-    // named parameter value (floats, ints, bools, etc)
+    // named parameter value (floats, ints, bools, strings, etc)
     template<
         typename backend_type,
         typename value_type,
@@ -91,8 +92,8 @@ namespace im_param {
     }
     #pragma endregion
 
-    #pragma region specializations for named list of parameter values (floats, ints, bools, etc)
-    // named list of parameter multi channel values (floats, ints, bools, etc)
+    #pragma region specializations for named list of parameter values (floats, ints, bools, strings, etc)
+    // named list of parameter multi channel values (floats, ints, bools, strings, etc)
     template<
         typename backend_type,
         typename collection_type,
@@ -123,7 +124,7 @@ namespace im_param {
         );
     }
 
-    // named list of parameter values (floats, ints, bools, etc)
+    // named list of parameter values (floats, ints, bools, strings, etc)
     template<
         typename backend_type,
         typename collection_type,

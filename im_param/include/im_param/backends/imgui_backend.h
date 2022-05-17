@@ -2,6 +2,8 @@
 
 #include <vector>
 #include <imgui.h>
+#include <imgui_stdlib.h>
+
 #include "imgui_candy/imgui_candy.h"
 #include "im_param/detail/cpp11_template_logic.h"
 #include "im_param/detail/backend.h"
@@ -12,13 +14,14 @@ namespace im_param {
 
         bool changed = false;
 
-        #pragma region specializations for named parameter multi channel values (floats, ints, bools, etc)
+        #pragma region specializations for named parameter multi channel values (floats, ints, bools, strings, etc)
         // ImGuiBackend: named parameter multi channel values (floats, ints, bools, etc)
         template<
             typename value_type,
             typename float_type,
             typename size_type = std::size_t,
-            std::enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
+            std::enable_if_t<Backend::is_base_value<value_type>::value, bool> = true,
+            std::enable_if_t<std::is_arithmetic<value_type>::value, bool> = true
         >
         ImGuiBackend& parameter(
             const std::string& name, 
@@ -54,9 +57,33 @@ namespace im_param {
             }
             return *this; 
         }
+
+        // ImGuiBackend: named parameter multi channel values (strings)
+        template<
+            typename size_type = std::size_t,
+            typename... Args
+        >
+        ImGuiBackend& parameter(
+            const std::string& name, 
+            std::string* ptr, 
+            size_type count, 
+            Args... args
+        )
+        {
+            for (int i=0; i<count; i++)
+            {
+                std::string str_idx = "[" + std::to_string(i) + "]";
+                changed |= ImGui::InputText(
+                    ImGuiCandy::append_id(name + str_idx, ptr+i).c_str(), 
+                    ptr + i, 
+                );
+            }
+
+            return *this; 
+        }
         #pragma endregion
 
-        #pragma region specializations for named parameter values (floats, ints, bools, etc)
+        #pragma region specializations for named parameter values (floats, ints, bools, strings, etc)
         // ImGuiBackend: named parameter floats values
         template<
             typename float_type,
@@ -118,7 +145,20 @@ namespace im_param {
         >
         ImGuiBackend& parameter(const std::string& name, bool_type& value)
         {
-            changed |= ImGui::Checkbox(name.c_str(), &value);
+            changed |= ImGui::Checkbox(
+                ImGuiCandy::append_id(name, &value).c_str(), 
+                &value
+            );
+            return *this;
+        }
+
+        // ImGuiBackend: named parameter string values
+        ImGuiBackend& parameter(const std::string& name, std::string& value)
+        {
+            changed |= ImGui::InputText(
+                ImGuiCandy::append_id(name, &value).c_str(), 
+                &value
+            );
             return *this;
         }
         #pragma endregion
@@ -395,8 +435,8 @@ namespace im_param {
         }
         #pragma endregion
 
-        #pragma region specializations for named list of parameter values (floats, ints, bools, etc)
-        // ImGuiBackend: named list of parameter values (floats, ints, bools, etc)
+        #pragma region specializations for named list of parameter values (floats, ints, bools, strings, etc)
+        // ImGuiBackend: named list of parameter values (floats, ints, bools, strings, etc)
         template<
             class collection_type,
             class value_type,
@@ -466,7 +506,7 @@ namespace im_param {
             return *this;
         }
 
-        // ImGuiBackend: named list of parameter values (floats, ints, bools, etc)
+        // ImGuiBackend: named list of parameter values (floats, ints, bools, strings, etc)
         // with default value for list_hierarchy_type = HierarchyType::Tree
         template<
             class collection_type,
@@ -491,8 +531,8 @@ namespace im_param {
         }
         #pragma endregion
 
-        #pragma region specializations for named list of parameter multi channel values (floats, ints, bools, etc)
-        // ImGuiBackend: named list of parameter multi channel values (floats, ints, bools, etc)
+        #pragma region specializations for named list of parameter multi channel values (floats, ints, bools, strings, etc)
+        // ImGuiBackend: named list of parameter multi channel values (floats, ints, bools, strings, etc)
         template<
             class collection_type,
             class value_type,
@@ -572,7 +612,7 @@ namespace im_param {
             return *this;
         }
 
-        // ImGuiBackend: named list of parameter multi channel values (floats, ints, bools, etc)
+        // ImGuiBackend: named list of parameter multi channel values (floats, ints, bools, strings, etc)
         // with default value for list_hierarchy_type = HierarchyType::Tree
         template<
             class collection_type,

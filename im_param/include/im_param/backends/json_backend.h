@@ -34,8 +34,8 @@ namespace im_param {
             return indent ? json.dump(indent) : json.dump();
         }
 
-        #pragma region specializations for named parameter multi channel values (floats, ints, bools, etc)
-        // JsonSerializerBackend: named parameter multi channel values (floats, ints, bools, etc)
+        #pragma region specializations for named parameter multi channel values (floats, ints, bools, strings, etc)
+        // JsonSerializerBackend: named parameter multi channel values (floats, ints, bools, strings, etc)
         template<
             typename value_type,
             typename size_type = std::size_t,
