@@ -1,0 +1,11 @@
+{
+    "name": "im-param",
+    "version": "0.1.0",
+    "dependencies": [
+        {
+            "name": "imgui",
+            "platform": "(linux & x86) | (linux & x64) | (windows & x86) | (windows & x64)"
+        }
+    ],
+    "builtin-baseline": "4826ede84084395b0f87476e48ff6d4070eba0e4"
+}

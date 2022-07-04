@@ -393,4 +393,5 @@ int main(int argc, char **argv)
     //   float val;
     // };
     #pragma endregion
+    return 0;
 }

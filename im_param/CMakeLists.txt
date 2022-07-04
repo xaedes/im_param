@@ -24,13 +24,15 @@ target_include_directories(
 )
 
 if (WITH_IMGUI_BACKEND)
-    if (NOT TARGET imgui AND NOT TARGET imgui::imgui)
+    if (NOT TARGET imgui::imgui)
         find_package(imgui REQUIRED)  # imgui::imgui
     endif()
 
     target_link_libraries(${PROJECT_NAME} INTERFACE imgui::imgui)
 
-    target_link_libraries(${PROJECT_NAME} INTERFACE imgui_candy)
+    if (TARGET imgui_candy)
+        target_link_libraries(${PROJECT_NAME} INTERFACE imgui_candy)
+    endif()
 endif()
 
 if (BUILD_EXAMPLE)

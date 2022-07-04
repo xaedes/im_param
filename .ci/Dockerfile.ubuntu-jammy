@@ -1,0 +1,4 @@
+FROM ubuntu:jammy
+# RUN sed -i -e 's/^APT/# APT/' -e 's/^DPkg/# DPkg/' /etc/apt/apt.conf.d/docker-clean
+RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y git cmake build-essential ninja-build
+RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y curl zip unzip tar
