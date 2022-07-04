@@ -85,6 +85,20 @@ def status_success()  { return "success" }
 def status_failure()  { return "failure" }
 def status_building() { return "building" }
 
+def is_configuration_enabled(params, env)
+{
+    return (
+        (
+               (params.PLATFORM_FILTER == 'all') 
+            || (params.PLATFORM_FILTER == env.PLATFORM)
+        ) && (
+               (env.PLATFORM == 'win')
+            || (params.DOCKER_FILE_FILTER == 'all')
+            || (params.DOCKER_FILE_FILTER == env.DOCKER_FILE)
+        )
+    );
+}
+
 pipeline {
     parameters {
         choice(name: 'PLATFORM_FILTER', choices: ['all', 'linux', 'win'], description: 'Run on specific platform')
@@ -175,17 +189,18 @@ pipeline {
                 stages {
                     stage('Prebuild') {
                         when {
-                            allOf {
-                                anyOf {
-                                    expression { params.PLATFORM_FILTER == 'all' }
-                                    expression { params.PLATFORM_FILTER == env.PLATFORM }
-                                }
-                                anyOf {
-                                    expression { env.PLATFORM == 'win' }
-                                    expression { params.DOCKER_FILE_FILTER == 'all' }
-                                    expression { params.DOCKER_FILE_FILTER == env.DOCKER_FILE }
-                                }
-                            }
+                            expression { is_configuration_enabled(params, env) == true }
+                            // allOf {
+                            //     anyOf {
+                            //         expression { params.PLATFORM_FILTER == 'all' }
+                            //         expression { params.PLATFORM_FILTER == env.PLATFORM }
+                            //     }
+                            //     anyOf {
+                            //         expression { env.PLATFORM == 'win' }
+                            //         expression { params.DOCKER_FILE_FILTER == 'all' }
+                            //         expression { params.DOCKER_FILE_FILTER == env.DOCKER_FILE }
+                            //     }
+                            // }
                         }
                         agent {
                             label 'deploy'
@@ -198,11 +213,12 @@ pipeline {
                         // agent any
                         when {
                             allOf {
-                                anyOf {
-                                    expression { params.PLATFORM_FILTER == 'all' }
-                                    expression { params.PLATFORM_FILTER == 'win' }
-                                }
+                                // anyOf {
+                                //     expression { params.PLATFORM_FILTER == 'all' }
+                                //     expression { params.PLATFORM_FILTER == 'win' }
+                                // }
                                 expression { env.PLATFORM == 'win' }
+                                expression { is_configuration_enabled(params, env) == true }
                             }
                         }
                         stages {
@@ -245,11 +261,12 @@ pipeline {
                         // agent any
                         when {
                             allOf {
-                                anyOf {
-                                    expression { params.PLATFORM_FILTER == 'all' }
-                                    expression { params.PLATFORM_FILTER == 'linux' }
-                                }
+                                // anyOf {
+                                //     expression { params.PLATFORM_FILTER == 'all' }
+                                //     expression { params.PLATFORM_FILTER == 'linux' }
+                                // }
                                 expression { env.PLATFORM == 'linux' }
+                                expression { is_configuration_enabled(params, env) == true }
                             }
                         }
                         stages {
@@ -261,14 +278,14 @@ pipeline {
                                         dir '.ci'
                                     }
                                 }
-                                when {
-                                    allOf {
-                                        anyOf {
-                                            expression { params.DOCKER_FILE_FILTER == 'all' }
-                                            expression { params.DOCKER_FILE_FILTER == env.DOCKER_FILE }
-                                        }
-                                    }
-                                }
+                                // when {
+                                //     allOf {
+                                //         anyOf {
+                                //             expression { params.DOCKER_FILE_FILTER == 'all' }
+                                //             expression { params.DOCKER_FILE_FILTER == env.DOCKER_FILE }
+                                //         }
+                                //     }
+                                // }
                                 stages {
                                     stage("scm-linux") {
                                         steps {
@@ -303,12 +320,20 @@ pipeline {
                 }
                 post {
                     success {
-                        echo "Success! ${PLATFORM} ${DOCKER_FILE} ${BUILD_TYPE} ${TARGET_TRIPLET}"
-                        deploy_badge(status_success(), env.PLATFORM, env.BUILD_TYPE, env.TARGET_TRIPLET, env.DOCKER_FILE)
+                        script {
+                            if (is_configuration_enabled(params, env)) {
+                                echo "Success! ${PLATFORM} ${DOCKER_FILE} ${BUILD_TYPE} ${TARGET_TRIPLET}"
+                                deploy_badge(status_success(), env.PLATFORM, env.BUILD_TYPE, env.TARGET_TRIPLET, env.DOCKER_FILE)
+                            } 
+                        }
                     }
                     failure {
-                        echo "Failure! ${PLATFORM} ${DOCKER_FILE} ${BUILD_TYPE} ${TARGET_TRIPLET}"
-                        deploy_badge(status_failure(), env.PLATFORM, env.BUILD_TYPE, env.TARGET_TRIPLET, env.DOCKER_FILE)
+                        script {
+                            if (is_configuration_enabled(params, env)) {
+                                echo "Failure! ${PLATFORM} ${DOCKER_FILE} ${BUILD_TYPE} ${TARGET_TRIPLET}"
+                                deploy_badge(status_failure(), env.PLATFORM, env.BUILD_TYPE, env.TARGET_TRIPLET, env.DOCKER_FILE)
+                            }
+                        }
                     }
                 }
             }
