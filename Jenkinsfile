@@ -95,6 +95,12 @@ def is_configuration_enabled(params, env)
                (env.PLATFORM == 'win')
             || (params.DOCKER_FILE_FILTER == 'all')
             || (params.DOCKER_FILE_FILTER == env.DOCKER_FILE)
+        ) && (
+               (params.BUILD_TYPE_FILTER == 'all')
+            || (params.BUILD_TYPE_FILTER == env.BUILD_TYPE)
+        ) && (
+               (params.TARGET_TRIPLET_FILTER == 'all')
+            || (params.TARGET_TRIPLET_FILTER == env.TARGET_TRIPLET)
         )
     );
 }
@@ -103,6 +109,8 @@ pipeline {
     parameters {
         choice(name: 'PLATFORM_FILTER', choices: ['all', 'linux', 'win'], description: 'Run on specific platform')
         choice(name: 'DOCKER_FILE_FILTER', choices: ['all', 'Dockerfile.ubuntu-bionic', 'Dockerfile.ubuntu-focal', 'Dockerfile.ubuntu-jammy', 'Dockerfile.ubuntu-xenial'], description: 'Run on specific docker file')
+        choice(name: 'BUILD_TYPE_FILTER', choices: ['all', 'Release', 'Debug'], description: 'Run specific build type')
+        choice(name: 'TARGET_TRIPLET_FILTER', choices: ['all', 'x64-linux', 'x86-linux', 'x64-windows', 'x86-windows'], description: 'Run with specific target triplet')
     }
     agent {
         label 'deploy'
@@ -190,17 +198,6 @@ pipeline {
                     stage('Prebuild') {
                         when {
                             expression { is_configuration_enabled(params, env) == true }
-                            // allOf {
-                            //     anyOf {
-                            //         expression { params.PLATFORM_FILTER == 'all' }
-                            //         expression { params.PLATFORM_FILTER == env.PLATFORM }
-                            //     }
-                            //     anyOf {
-                            //         expression { env.PLATFORM == 'win' }
-                            //         expression { params.DOCKER_FILE_FILTER == 'all' }
-                            //         expression { params.DOCKER_FILE_FILTER == env.DOCKER_FILE }
-                            //     }
-                            // }
                         }
                         agent {
                             label 'deploy'
@@ -213,10 +210,6 @@ pipeline {
                         // agent any
                         when {
                             allOf {
-                                // anyOf {
-                                //     expression { params.PLATFORM_FILTER == 'all' }
-                                //     expression { params.PLATFORM_FILTER == 'win' }
-                                // }
                                 expression { env.PLATFORM == 'win' }
                                 expression { is_configuration_enabled(params, env) == true }
                             }
@@ -261,10 +254,6 @@ pipeline {
                         // agent any
                         when {
                             allOf {
-                                // anyOf {
-                                //     expression { params.PLATFORM_FILTER == 'all' }
-                                //     expression { params.PLATFORM_FILTER == 'linux' }
-                                // }
                                 expression { env.PLATFORM == 'linux' }
                                 expression { is_configuration_enabled(params, env) == true }
                             }
@@ -278,14 +267,6 @@ pipeline {
                                         dir '.ci'
                                     }
                                 }
-                                // when {
-                                //     allOf {
-                                //         anyOf {
-                                //             expression { params.DOCKER_FILE_FILTER == 'all' }
-                                //             expression { params.DOCKER_FILE_FILTER == env.DOCKER_FILE }
-                                //         }
-                                //     }
-                                // }
                                 stages {
                                     stage("scm-linux") {
                                         steps {
