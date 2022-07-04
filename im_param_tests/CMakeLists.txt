@@ -14,7 +14,8 @@ create_test_sourcelist (Tests
     # generic_and_nested_types.cpp
     cpp11_templates.cpp
     forward_to_backend.cpp
-    forward_from_backend_minimal.cpp
+    # forward_from_backend_minimal.cpp
+    forward_from_backend_minimal_level_0.cpp
 )
 
 # add the executable
