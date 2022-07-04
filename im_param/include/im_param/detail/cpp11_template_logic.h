@@ -8,7 +8,7 @@ namespace im_param {
     template<bool C, class A, class B>
     using conditional_t = typename std::conditional<C,A,B>::type;
 
-    template<bool C, class T>
+    template<bool C, class T = void>
     using enable_if_t = typename std::enable_if<C,T>::type;
     #pragma endregion
 
