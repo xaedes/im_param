@@ -7,6 +7,9 @@ namespace im_param {
     #pragma region c++11 implementations of c++14 template functions
     template<bool C, class A, class B>
     using conditional_t = typename std::conditional<C,A,B>::type;
+
+    template<bool C, class T>
+    using enable_if_t = typename std::enable_if<C,T>::type;
     #pragma endregion
 
     #pragma region c++11 implementations of c++17 template logic functions

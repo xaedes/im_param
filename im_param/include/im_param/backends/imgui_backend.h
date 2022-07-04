@@ -20,8 +20,8 @@ namespace im_param {
             typename value_type,
             typename float_type,
             typename size_type = std::size_t,
-            std::enable_if_t<Backend::is_base_value<value_type>::value, bool> = true,
-            std::enable_if_t<std::is_arithmetic<value_type>::value, bool> = true
+            enable_if_t<Backend::is_base_value<value_type>::value, bool> = true,
+            enable_if_t<std::is_arithmetic<value_type>::value, bool> = true
         >
         ImGuiBackend& parameter(
             const std::string& name, 
@@ -90,7 +90,7 @@ namespace im_param {
             typename A = float_type, 
             typename B = float_type,
             typename C = float_type,
-            std::enable_if_t<std::is_floating_point<float_type>::value, bool> = true
+            enable_if_t<std::is_floating_point<float_type>::value, bool> = true
         >
         ImGuiBackend& parameter(const std::string& name, float_type& value, A min_scaled=0, B max_scaled=1, C unit_scale=1)
         {
@@ -117,7 +117,7 @@ namespace im_param {
             typename A = int_type, 
             typename B = int_type,
             typename C = int_type,
-            std::enable_if_t<Backend::is_non_bool_integral<int_type>::value, bool> = true
+            enable_if_t<Backend::is_non_bool_integral<int_type>::value, bool> = true
         >
         ImGuiBackend& parameter(const std::string& name, int_type& value, A min_scaled=0, B max_scaled=1, C unit_scale=1)
         {
@@ -141,7 +141,7 @@ namespace im_param {
         // ImGuiBackend: named parameter bool values
         template<
             typename bool_type,
-            std::enable_if_t<std::is_same<bool_type, bool>::value, bool> = true
+            enable_if_t<std::is_same<bool_type, bool>::value, bool> = true
         >
         ImGuiBackend& parameter(const std::string& name, bool_type& value)
         {
@@ -165,7 +165,7 @@ namespace im_param {
 
         #pragma region specializations for named parameter container
         // ImGuiBackend: named parameter container
-        template<typename T, typename U, std::enable_if_t<!Backend::is_base_value<T>::value, bool> = true>
+        template<typename T, typename U, enable_if_t<!Backend::is_base_value<T>::value, bool> = true>
         ImGuiBackend& parameter(const std::string& name, T& params, const TypeHolder<U>& typeholder, HierarchyType hierarchy_type = HierarchyType::Tree)
         {
             switch(hierarchy_type)
@@ -215,12 +215,12 @@ namespace im_param {
             class inserter_iterator_type,
             class type_holder_type,
             class... Args,
-            std::enable_if_t<!Backend::is_base_value<value_type>::value, bool> = true
+            enable_if_t<!Backend::is_base_value<value_type>::value, bool> = true
 
             // typename T, 
             // typename I, 
             // typename U, 
-            // std::enable_if_t<!Backend::is_base_value<T>::value, bool> = true
+            // enable_if_t<!Backend::is_base_value<T>::value, bool> = true
         >
         ImGuiBackend& parameter(
             const std::string& name, 
@@ -385,7 +385,7 @@ namespace im_param {
             class inserter_iterator_type,
             class type_holder_type,
             class... Args,
-            std::enable_if_t<!Backend::is_base_value<value_type>::value, bool> = true
+            enable_if_t<!Backend::is_base_value<value_type>::value, bool> = true
         >
         ImGuiBackend& parameter(
             const std::string& name, 
@@ -415,7 +415,7 @@ namespace im_param {
             class inserter_iterator_type,
             class type_holder_type,
             class... Args,
-            std::enable_if_t<!Backend::is_base_value<value_type>::value, bool> = true
+            enable_if_t<!Backend::is_base_value<value_type>::value, bool> = true
         >
         ImGuiBackend& parameter(
             const std::string& name, 
@@ -443,12 +443,12 @@ namespace im_param {
             class value_iterator_type,
             class inserter_iterator_type,
             class... Args,
-            std::enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
+            enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
 
             // typename T, 
             // typename I, 
             // typename U, 
-            // std::enable_if_t<!Backend::is_base_value<T>::value, bool> = true
+            // enable_if_t<!Backend::is_base_value<T>::value, bool> = true
         >
         ImGuiBackend& parameter(
             const std::string& name, 
@@ -514,7 +514,7 @@ namespace im_param {
             class value_iterator_type,
             class inserter_iterator_type,
             class... Args,
-            std::enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
+            enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
         >
         ImGuiBackend& parameter(
             const std::string& name, 
@@ -541,14 +541,14 @@ namespace im_param {
             class callback_type,
             class size_type = std::size_t,
             class... Args,
-            std::enable_if_t<!Backend::is_type_holder<callback_type>::value, bool> = true
+            enable_if_t<!Backend::is_type_holder<callback_type>::value, bool> = true
 
-            // std::enable_if_t<!Backend::is_base_value<value_type>::value, bool> = true
+            // enable_if_t<!Backend::is_base_value<value_type>::value, bool> = true
 
             // typename T, 
             // typename I, 
             // typename U, 
-            // std::enable_if_t<!Backend::is_base_value<T>::value, bool> = true
+            // enable_if_t<!Backend::is_base_value<T>::value, bool> = true
         >
         ImGuiBackend& parameter(
             const std::string& name, 
@@ -557,7 +557,7 @@ namespace im_param {
             size_type num_channels, 
             HierarchyType list_hierarchy_type,
             Args... args
-            // std::enable_if_t<!Backend::is_type_holder<callback_type>::value, bool> = true
+            // enable_if_t<!Backend::is_type_holder<callback_type>::value, bool> = true
 
             // const std::string& name, T&& begin, T&& end, I&& inserter, 
             // const TypeHolder<U>& typeholder, 
@@ -622,7 +622,7 @@ namespace im_param {
             class callback_type,
             class size_type = std::size_t,
             class... Args,
-            std::enable_if_t<!Backend::is_type_holder<callback_type>::value, bool> = true
+            enable_if_t<!Backend::is_type_holder<callback_type>::value, bool> = true
         >
         ImGuiBackend& parameter(
             const std::string& name, 

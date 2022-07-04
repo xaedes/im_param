@@ -34,7 +34,7 @@ namespace im_param {
         class backend_type,
         class value_type,
         int N,
-        std::enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
+        enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
     >
     backend_type& parameter(
         backend_type& backend, 

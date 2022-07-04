@@ -67,7 +67,7 @@ namespace im_param {
             typename value_type,
             typename size_type = std::size_t, 
             class... Args,
-            std::enable_if_t<is_value_type<value_type>::value, bool> = true
+            enable_if_t<is_value_type<value_type>::value, bool> = true
         >
         GlslStructGeneratorBackend& parameter(const std::string& name, value_type* ptr, size_type count, Args... args)
         {
@@ -87,7 +87,7 @@ namespace im_param {
             typename value_type,
             typename size_type = std::size_t, 
             class... Args,
-            std::enable_if_t<is_value_type<value_type>::value, bool> = true
+            enable_if_t<is_value_type<value_type>::value, bool> = true
         >
         GlslStructGeneratorBackend& parameter(const std::string& name, value_type& value, Args... args)
         {
@@ -98,7 +98,7 @@ namespace im_param {
         #pragma endregion
 
         #pragma region specializations for named parameter container
-        template<typename T, typename U, std::enable_if_t<!Backend::is_specialized<T>::value, bool> = true>
+        template<typename T, typename U, enable_if_t<!Backend::is_specialized<T>::value, bool> = true>
         GlslStructGeneratorBackend& parameter(const std::string& name, T& params, const U& typeholder, HierarchyType hierarchy_type = HierarchyType::Tree)
         {
             auto old = current;
