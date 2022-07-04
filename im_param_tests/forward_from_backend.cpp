@@ -5,19 +5,19 @@
 
 #include "tests_common.h"
 
-namespace im_param {
+// namespace im_param {
 
-    // forward declaration for custom types
+//     // forward declaration for custom types
 
-    template<class backend_type, class T, class U, class... Args>
-    inline backend_type& parameter(
-        backend_type& backend,
-        T& params, 
-        const TypeHolder<U>&,
-        Args... args
-    );
+//     template<class backend_type, class T, class U, class... Args>
+//     inline backend_type& parameter(
+//         backend_type& backend,
+//         T& params, 
+//         const TypeHolder<U>&,
+//         Args... args
+//     );
 
-} // namespace im_param
+// } // namespace im_param
 
 struct Backend
 {
@@ -47,11 +47,15 @@ namespace im_param {
 
     // describe struct ::SimpleFoo
 
-    template<class backend_type, class T=::SimpleFoo, class U=::SimpleFoo, class... Args>
-    inline backend_type& parameter(
+    template<
+        class backend_type, class T, class U, 
+        enable_if_t<std::is_same<T, ::SimpleFoo>::value && std::is_same<U, ::SimpleFoo>::value, bool> = true,
+        class... Args
+    >
+    backend_type& parameter(
         backend_type& backend,
-        ::SimpleFoo& params, 
-        const TypeHolder<::SimpleFoo>&,
+        T& params, 
+        const TypeHolder<U>&,
         Args... args)
     {
         ++params.counter;
@@ -60,11 +64,15 @@ namespace im_param {
 
     // describe struct ::SimpleBar
 
-    template<class backend_type, class T=::SimpleBar, class U=::SimpleBar, class... Args>
-    inline backend_type& parameter(
+    template<
+        class backend_type, class T, class U, 
+        enable_if_t<std::is_same<T, ::SimpleBar>::value && std::is_same<U, ::SimpleBar>::value, bool> = true,
+        class... Args
+    >
+    backend_type& parameter(
         backend_type& backend,
-        ::SimpleBar& params, 
-        const TypeHolder<::SimpleBar>&,
+        T& params, 
+        const TypeHolder<U>&,
         Args... args)
     {
         ++params.counter;
