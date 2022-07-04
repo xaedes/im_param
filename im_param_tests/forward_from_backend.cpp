@@ -5,6 +5,20 @@
 
 #include "tests_common.h"
 
+namespace im_param {
+
+    // forward declaration for custom types
+    
+    template<class backend_type, class T, class U, class... Args>
+    inline backend_type& parameter(
+        backend_type& backend,
+        T& params, 
+        const TypeHolder<U>&,
+        Args... args
+    );
+
+} // namespace im_param
+
 struct Backend
 {
     int counter = 0;
