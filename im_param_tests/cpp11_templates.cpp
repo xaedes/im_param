@@ -1,6 +1,8 @@
 
 #include <type_traits>
 
+#include "tests_common.h"
+
 template<bool C, class T>
 using enable_if_t = typename std::enable_if<C,T>::type;
 
