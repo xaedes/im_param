@@ -174,6 +174,19 @@ pipeline {
                 }
                 stages {
                     stage('Prebuild') {
+                        when {
+                            allOf {
+                                anyOf {
+                                    expression { params.PLATFORM_FILTER == 'all' }
+                                    expression { params.PLATFORM_FILTER == env.PLATFORM }
+                                }
+                                anyOf {
+                                    expression { env.PLATFORM == 'win' }
+                                    expression { params.DOCKER_FILE_FILTER == 'all' }
+                                    expression { params.DOCKER_FILE_FILTER == env.DOCKER_FILE }
+                                }
+                            }
+                        }
                         agent {
                             label 'deploy'
                         }
