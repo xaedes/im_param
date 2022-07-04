@@ -79,7 +79,7 @@ namespace im_param {
             const std::string& name, T& params, const TypeHolder<U>& typeholder, Args... args)
         {
             stack.emplace_back();
-            im_param::parameter(*this, params, typeholder);
+            im_param::parameter(*this, params, typeholder, std::forward<Args>(args)...);
             stack[stack.size()-2][name] = stack.back();
             stack.pop_back();
 

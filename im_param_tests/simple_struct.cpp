@@ -15,11 +15,12 @@ namespace im_param {
 
     // describe struct ::SimpleStruct
 
-    template<class backend_type>
+    template<class backend_type, class... Args>
     backend_type& parameter(
         backend_type& backend,
         ::SimpleStruct& params, 
-        const TypeHolder<::SimpleStruct>&)
+        const TypeHolder<::SimpleStruct>&,
+        Args... args)
     {
         parameter(backend, "a", params.a);
         parameter(backend, "b", params.b);
