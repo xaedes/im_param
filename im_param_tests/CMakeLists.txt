@@ -9,10 +9,11 @@ include(CTest)
 create_test_sourcelist (Tests
     ${PROJECT_NAME}.cpp
     # add tests here
-    simple_struct.cpp
+    # simple_struct.cpp
     # multi_base_value.cpp
     # generic_and_nested_types.cpp
     cpp11_templates.cpp
+    forward_to_backend.cpp
 )
 
 # add the executable
