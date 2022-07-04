@@ -8,7 +8,7 @@
 namespace im_param {
 
     // forward declaration for custom types
-    
+
     template<class backend_type, class T, class U, class... Args>
     inline backend_type& parameter(
         backend_type& backend,
@@ -33,20 +33,38 @@ struct Backend
 
 };
 
-struct SimpleStruct
+struct SimpleFoo
+{
+    int counter = 0;
+};
+
+struct SimpleBar
 {
     int counter = 0;
 };
 
 namespace im_param {
 
-    // describe struct ::SimpleStruct
+    // describe struct ::SimpleFoo
 
-    template<class backend_type, class... Args>
+    template<class backend_type, class T=::SimpleFoo, class U=::SimpleFoo, class... Args>
     backend_type& parameter(
         backend_type& backend,
-        ::SimpleStruct& params, 
-        const TypeHolder<::SimpleStruct>&,
+        ::SimpleFoo& params, 
+        const TypeHolder<::SimpleFoo>&,
+        Args... args)
+    {
+        ++params.counter;
+        return backend;
+    }
+
+    // describe struct ::SimpleBar
+
+    template<class backend_type, class T=::SimpleBar, class U=::SimpleBar, class... Args>
+    backend_type& parameter(
+        backend_type& backend,
+        ::SimpleBar& params, 
+        const TypeHolder<::SimpleBar>&,
         Args... args)
     {
         ++params.counter;
@@ -59,10 +77,18 @@ int forward_from_backend(int argc, char* argv[])
 {
     {
         Backend backend;
-        SimpleStruct simple_struct;
-        ASSERT(simple_struct.counter == 0);
-        im_param::parameter(backend, "simple_struct", simple_struct, im_param::TypeHolder<SimpleStruct>());
-        ASSERT(simple_struct.counter == 1);
+        SimpleFoo simple;
+        ASSERT(simple.counter == 0);
+        im_param::parameter(backend, "simple", simple, im_param::TypeHolder<SimpleFoo>());
+        ASSERT(simple.counter == 1);
+    }
+
+    {
+        Backend backend;
+        SimpleBar simple;
+        ASSERT(simple.counter == 0);
+        im_param::parameter(backend, "simple", simple, im_param::TypeHolder<SimpleBar>());
+        ASSERT(simple.counter == 1);
     }
 
     return 0;
