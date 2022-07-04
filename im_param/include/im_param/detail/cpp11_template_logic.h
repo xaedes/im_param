@@ -21,7 +21,7 @@ namespace im_param {
 
     // https://en.cppreference.com/w/cpp/types/negation
     template<class B>
-    struct negation : std::bool_constant<!bool(B::value)> { };
+    struct negation : std::integral_constant<bool, !bool(B::value)> { };
     #pragma endregion
 
 } // namespace
