@@ -48,7 +48,7 @@ namespace im_param {
     // describe struct ::SimpleFoo
 
     template<class backend_type, class T=::SimpleFoo, class U=::SimpleFoo, class... Args>
-    backend_type& parameter(
+    inline backend_type& parameter(
         backend_type& backend,
         ::SimpleFoo& params, 
         const TypeHolder<::SimpleFoo>&,
@@ -61,7 +61,7 @@ namespace im_param {
     // describe struct ::SimpleBar
 
     template<class backend_type, class T=::SimpleBar, class U=::SimpleBar, class... Args>
-    backend_type& parameter(
+    inline backend_type& parameter(
         backend_type& backend,
         ::SimpleBar& params, 
         const TypeHolder<::SimpleBar>&,
