@@ -6,6 +6,8 @@
 // rename every function to "parameter"
 // works, simple, but hard to follow, hence hard to debug
 
+namespace lvl4a {
+
 namespace im_param {
     
     template<class BE, class UT>
@@ -75,6 +77,8 @@ namespace im_param {
 
 } // namespace im_param
 
+} // namespace lvl4a
+
 int forward_from_backend_minimal_level_4a(int argc, char* argv[]) {
 
     // a call chain can look like this:
@@ -102,22 +106,22 @@ int forward_from_backend_minimal_level_4a(int argc, char* argv[]) {
     // im_param::parameter       | Custom<BE,UT>::parameter
     // Custom<BE,UT>::parameter  | im_param::parameter
 
-    Backend backend;
-    Foo foo{0};
+    lvl4a::Backend backend{};
+    lvl4a::Foo foo{0};
     ASSERT(foo.val == 0);
     
-    im_param::parameter(backend, "foo", foo);
+    lvl4a::im_param::parameter(backend, "foo", foo);
     ASSERT(foo.val == 1);
     ASSERT(backend.called_with_ut == 1);
     ASSERT(backend.called_with_int == 1);
     
     int x=1;
     
-    im_param::parameter(backend, "x", x);
+    lvl4a::im_param::parameter(backend, "x", x);
     ASSERT(x == 2);
     ASSERT(backend.called_with_int == 2);
     
-    im_param::parameter(backend, "x", x);
+    lvl4a::im_param::parameter(backend, "x", x);
     ASSERT(x == 3);
     ASSERT(backend.called_with_int == 3);
 

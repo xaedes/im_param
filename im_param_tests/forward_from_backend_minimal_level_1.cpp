@@ -2,6 +2,8 @@
 
 #include "tests_common.h"
 
+namespace lvl1 {
+
 #pragma region part of backend
 template<class U, class T>
 void backend(U u, T& val)
@@ -33,6 +35,8 @@ struct MyFloat
 };
 #pragma endregion
 
+} // namespace lvl1
+
 int forward_from_backend_minimal_level_1(int argc, char* argv[]) {
     // this makes it possible to forward additional templated arguments.
     // a big disadvantage in this formulation is that it requires function definitions in the custom types.
@@ -42,24 +46,24 @@ int forward_from_backend_minimal_level_1(int argc, char* argv[]) {
     float uf = 2.0f;
     double ud = -2.0;
     {
-        MyInt i{0};
-        backend(uf, i);
+        lvl1::MyInt i{0};
+        lvl1::backend(uf, i);
         ASSERT(i.val == 2);
     }
     {
-        MyInt i{0};
-        backend(ud, i);
+        lvl1::MyInt i{0};
+        lvl1::backend(ud, i);
         ASSERT(i.val == -2);
     }
 
     {
-        MyFloat f{2.0f};
-        backend(uf, f);
+        lvl1::MyFloat f{2.0f};
+        lvl1::backend(uf, f);
         ASSERT(f.val == 4.0f);
     }
     {
-        MyFloat f{2.0f};
-        backend(ud, f);
+        lvl1::MyFloat f{2.0f};
+        lvl1::backend(ud, f);
         ASSERT(f.val == -4.0f);
     }
 

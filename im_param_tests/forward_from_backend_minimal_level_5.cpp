@@ -8,6 +8,7 @@
 // but now everything, even fundamental types, require typeholders, 
 // which is cumbersome to use.
 
+namespace lvl5 {
 namespace im_param {
     
     template<class BE, class UT, class TH>
@@ -128,14 +129,15 @@ namespace im_param {
     };
     
 } // namespace im_param
+} // namespace lvl5
 
 int forward_from_backend_minimal_level_5(int argc, char* argv[]) {
 
-    Backend backend;
-    Foo<int>::Bar bar{0};
+    lvl5::Backend backend{};
+    lvl5::Foo<int>::Bar bar{0};
     ASSERT(bar.val == 0);
     
-    im_param::parameter(backend, "bar", bar, im_param::TypeHolder<Foo<int>>());
+    lvl5::im_param::parameter(backend, "bar", bar, lvl5::im_param::TypeHolder<lvl5::Foo<int>>());
     ASSERT(bar.val == 1);
     ASSERT(backend.called_with_ut == 1);
     ASSERT(backend.called_with_int == 1);

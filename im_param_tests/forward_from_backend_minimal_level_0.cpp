@@ -2,6 +2,8 @@
 
 #include "tests_common.h"
 
+namespace lvl0 {
+
 #pragma region part of backend
 template<class T>
 void forwarded(T& val);
@@ -28,14 +30,16 @@ void forwarded(float& val)
 }
 #pragma endregion
 
+} // namespace lvl0
+
 int forward_from_backend_minimal_level_0(int argc, char* argv[]) {
     // calling the backend is possible because forwarded specializations are defined
     int i=1;
-    backend(i);
+    lvl0::backend(i);
     ASSERT(i == 2);
 
     float f=2;
-    backend(f);
+    lvl0::backend(f);
     ASSERT(f == 4);
 
     return 0;

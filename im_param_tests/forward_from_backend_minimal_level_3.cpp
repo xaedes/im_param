@@ -3,7 +3,10 @@
 
 #include "tests_common.h"
 
-namespace ns {
+
+namespace lvl3 {
+
+namespace im_param {
     
     template<class BE, class UT>
     struct UserLand
@@ -23,7 +26,7 @@ namespace ns {
         be.work_backend(label, ut);
     }
     
-} // namespace ns
+} // namespace im_param
 
 struct Backend
 {
@@ -33,7 +36,7 @@ struct Backend
     {
         std::cout << "Backend::work_backend('" << label << "', " << ut << ")" << "\n";
         ++called_with_int;
-        ns::userland(*this, ut);
+        im_param::userland(*this, ut);
     }
     
     template<class UT>
@@ -41,7 +44,7 @@ struct Backend
     {
         std::cout << "Backend::work_backend('" << label << "', ut)" << "\n";
         ++called_with_ut;
-        ns::userland(*this, ut);
+        im_param::userland(*this, ut);
     }
 };
 
@@ -50,7 +53,7 @@ struct Foo
     int val=0;
 };
 
-namespace ns {
+namespace im_param {
     
     /*
     #define BEGIN(be,UT,ut) template<class BE> struct UserLand<BE, UT> { static void spezialization(BE& be, UT& ut)
@@ -85,14 +88,15 @@ namespace ns {
     {
         static void spezialization(BE& be, Foo& ut)
         {
-            ns::kickoff(be, "val", ut.val);
+            im_param::kickoff(be, "val", ut.val);
         }
     };
     //*/
-}
+} // namespace im_param
+
+} // namespace lvl3
 
 int forward_from_backend_minimal_level_3(int argc, char* argv[]) {
-
     // a call chain can look like this:
     // 
     // kickoff 
@@ -112,31 +116,31 @@ int forward_from_backend_minimal_level_3(int argc, char* argv[]) {
     //
     // context                         | callable
     // --------------------------------+---------
-    // usercode                        | ns::kickoff, ns::userland
-    // ns::kickoff                     | BE::work_backend
-    // BE::work_backend                | ns::userland, ns::kickoff
-    // ns::userland                    | UserLand<BE,UT>::spezialization
-    // UserLand<BE,UT>::spezialization | ns::kickoff
+    // usercode                        | im_param::kickoff, im_param::userland
+    // im_param::kickoff               | BE::work_backend
+    // BE::work_backend                | im_param::userland, im_param::kickoff
+    // im_param::userland              | UserLand<BE,UT>::spezialization
+    // UserLand<BE,UT>::spezialization | im_param::kickoff
     // 
-    // the difference between ns::kickoff and ns::userland is that ns::kickoff
+    // the difference between im_param::kickoff and im_param::userland is that im_param::kickoff
     // takes additional arguments that can be consumed by the backend
 
-    Backend backend;
-    Foo foo{0};
+    lvl3::Backend backend{};
+    lvl3::Foo foo{0};
     ASSERT(foo.val == 0);
     
-    ns::kickoff(backend, "foo", foo);
+    lvl3::im_param::kickoff(backend, "foo", foo);
     ASSERT(foo.val == 1);
     ASSERT(backend.called_with_ut == 1);
     ASSERT(backend.called_with_int == 1);
     
     int x=1;
     
-    ns::kickoff(backend, "x", x);
+    lvl3::im_param::kickoff(backend, "x", x);
     ASSERT(x == 2);
     ASSERT(backend.called_with_int == 2);
     
-    ns::kickoff(backend, "x", x);
+    lvl3::im_param::kickoff(backend, "x", x);
     ASSERT(x == 3);
     ASSERT(backend.called_with_int == 3);
 
