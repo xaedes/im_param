@@ -20,6 +20,7 @@ if not [%~4]==[] set TESTS_PROJECT=%~4
 if not [%~3]==[] set TARGET_TRIPLET=%~3
 if not [%~2]==[] set BUILD_TYPE=%~2
 
+echo.
 echo %~0 %*
 echo ---
 echo BUILD_TYPE:      %BUILD_TYPE%
@@ -62,6 +63,8 @@ if [%ARCH_TRIPLET%]==[x64_x86] (set SETUP_COMPILERS_TRIPLET=amd64_x86)
 if [%ARCH_TRIPLET%]==[x86_x64] (set SETUP_COMPILERS_TRIPLET=x86_amd64)
 if [%ARCH_TRIPLET%]==[x86_x86] (set SETUP_COMPILERS_TRIPLET=x86)
 echo SETUP_COMPILERS_TRIPLET: %SETUP_COMPILERS_TRIPLET%
+echo SETUP_COMPILERS_CMD: %SETUP_COMPILERS_CMD%
+echo ---
 
 rem ---------------------------------------------------------------------------
 if [%~1]==[all]         goto all
