@@ -93,7 +93,7 @@ function_build() {
     pwd
     echo cmake --version
     cmake --version
-    echo cmake -G "$CMAKE_GENERATOR"-DCMAKE_CXX_STANDARD=11 -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_TOOLCHAIN_FILE=$DIR/tools/vcpkg/scripts/buildsystems/vcpkg.cmake "$DIR"
+    echo cmake -G "$CMAKE_GENERATOR" -DCMAKE_CXX_STANDARD=11 -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_TOOLCHAIN_FILE=$DIR/tools/vcpkg/scripts/buildsystems/vcpkg.cmake "$DIR"
     cmake -G "$CMAKE_GENERATOR" -DCMAKE_CXX_STANDARD=11 -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_TOOLCHAIN_FILE=$DIR/tools/vcpkg/scripts/buildsystems/vcpkg.cmake "$DIR"
     echo "$DIR/tools/vcpkg/buildtrees/imgui/src/v1.88-34c93572a3.clean/CMakeLists.txt"
     cat "$DIR/tools/vcpkg/buildtrees/imgui/src/v1.88-34c93572a3.clean/CMakeLists.txt"
