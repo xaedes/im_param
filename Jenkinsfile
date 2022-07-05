@@ -126,74 +126,74 @@ pipeline {
         stage('MultiPlatform') {
 
             matrix {
-                axes {
-                    axis {
-                        name 'PLATFORM'
-                        values 'linux'
-                    }
-                    axis {
-                        name 'BUILD_TYPE'
-                        values 'Release'
-                    }
-                    axis {
-                        name 'TARGET_TRIPLET'
-                        values 'x64-linux'
-                    }
-                    axis {
-                        name 'DOCKER_FILE'
-                        values 'Dockerfile.ubuntu-focal'
-                    }
-                }
                 // axes {
                 //     axis {
                 //         name 'PLATFORM'
-                //         values 'linux', 'win'
+                //         values 'linux'
                 //     }
                 //     axis {
                 //         name 'BUILD_TYPE'
-                //         values 'Release', 'Debug'
+                //         values 'Release'
                 //     }
                 //     axis {
                 //         name 'TARGET_TRIPLET'
-                //         values 'x64-linux', 'x86-linux', 'x64-windows', 'x86-windows'
+                //         values 'x64-linux'
                 //     }
                 //     axis {
                 //         name 'DOCKER_FILE'
-                //         values 'Dockerfile.ubuntu-bionic', 'Dockerfile.ubuntu-focal', 'Dockerfile.ubuntu-jammy', 'Dockerfile.ubuntu-xenial'
+                //         values 'Dockerfile.ubuntu-focal'
                 //     }
                 // }
-                // excludes {
-                //     exclude {
-                //         axis {
-                //             name 'PLATFORM'
-                //             values 'linux'
-                //         }
-                //         axis {
-                //             name 'TARGET_TRIPLET'
-                //             values 'x64-windows', 'x86-windows'
-                //         }
-                //     }
-                //     exclude {
-                //         axis {
-                //             name 'PLATFORM'
-                //             values 'win'
-                //         }
-                //         axis {
-                //             name 'TARGET_TRIPLET'
-                //             values 'x64-linux', 'x86-linux'
-                //         }
-                //     }
-                //     exclude {
-                //         axis {
-                //             name 'PLATFORM'
-                //             values 'win'
-                //         }
-                //         axis {
-                //             name 'DOCKER_FILE'
-                //             values 'Dockerfile.ubuntu-focal', 'Dockerfile.ubuntu-jammy', 'Dockerfile.ubuntu-xenial'
-                //         }
-                //     }
-                // }
+                axes {
+                    axis {
+                        name 'PLATFORM'
+                        values 'linux', 'win'
+                    }
+                    axis {
+                        name 'BUILD_TYPE'
+                        values 'Release', 'Debug'
+                    }
+                    axis {
+                        name 'TARGET_TRIPLET'
+                        values 'x64-linux', 'x86-linux', 'x64-windows', 'x86-windows'
+                    }
+                    axis {
+                        name 'DOCKER_FILE'
+                        values 'Dockerfile.ubuntu-bionic', 'Dockerfile.ubuntu-focal', 'Dockerfile.ubuntu-jammy', 'Dockerfile.ubuntu-xenial'
+                    }
+                }
+                excludes {
+                    exclude {
+                        axis {
+                            name 'PLATFORM'
+                            values 'linux'
+                        }
+                        axis {
+                            name 'TARGET_TRIPLET'
+                            values 'x64-windows', 'x86-windows'
+                        }
+                    }
+                    exclude {
+                        axis {
+                            name 'PLATFORM'
+                            values 'win'
+                        }
+                        axis {
+                            name 'TARGET_TRIPLET'
+                            values 'x64-linux', 'x86-linux'
+                        }
+                    }
+                    exclude {
+                        axis {
+                            name 'PLATFORM'
+                            values 'win'
+                        }
+                        axis {
+                            name 'DOCKER_FILE'
+                            values 'Dockerfile.ubuntu-focal', 'Dockerfile.ubuntu-jammy', 'Dockerfile.ubuntu-xenial'
+                        }
+                    }
+                }
                 stages {
                     stage('Prebuild') {
                         when {
