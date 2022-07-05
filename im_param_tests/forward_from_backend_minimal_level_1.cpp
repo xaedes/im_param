@@ -35,7 +35,7 @@ struct MyFloat
 
 int forward_from_backend_minimal_level_1(int argc, char* argv[]) {
     // this makes it possible to forward additional templated arguments.
-    // a big disadvantage  in this formulation is that it requires functional definitions in the custom types.
+    // a big disadvantage in this formulation is that it requires function definitions in the custom types.
     // the idea of im_param is that you can provide definitions for any custom type, whether 
     // you have control over its code or not.
     
