@@ -21,6 +21,8 @@ create_test_sourcelist (Tests
     forward_from_backend_minimal_level_2.cpp
     # forward_from_backend_minimal_level_2a_wont_compile_on_gcc.cpp
     forward_from_backend_minimal_level_3.cpp
+    forward_from_backend_minimal_level_4a.cpp
+    forward_from_backend_minimal_level_4b.cpp
 )
 
 # add the executable
