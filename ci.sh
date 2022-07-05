@@ -75,7 +75,9 @@ function_tools() {
         mkdir -p "$DIR/tools"
     fi
     if [ ! -d "$DIR/tools/vcpkg" ]; then
-        git clone https://github.com/microsoft/vcpkg.git "$DIR/tools/vcpkg/"
+        # contains patch for imgui, so that C++ 11 is enabled for imgui compilation
+        git clone git@github.com:xaedes/vcpkg.git "$DIR/tools/vcpkg/"
+        # git clone https://github.com/microsoft/vcpkg.git "$DIR/tools/vcpkg/"
         "$DIR/tools/vcpkg/bootstrap-vcpkg.sh" -disableMetrics
     fi
 }
@@ -91,7 +93,7 @@ function_build() {
     pwd
     echo cmake --version
     cmake --version
-    echo cmake -G "$CMAKE_GENERATOR" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_TOOLCHAIN_FILE=$DIR/tools/vcpkg/scripts/buildsystems/vcpkg.cmake "$DIR"
+    echo cmake -G "$CMAKE_GENERATOR"-DCMAKE_CXX_STANDARD=11 -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_TOOLCHAIN_FILE=$DIR/tools/vcpkg/scripts/buildsystems/vcpkg.cmake "$DIR"
     cmake -G "$CMAKE_GENERATOR" -DCMAKE_CXX_STANDARD=11 -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_TOOLCHAIN_FILE=$DIR/tools/vcpkg/scripts/buildsystems/vcpkg.cmake "$DIR"
     cat "$DIR/build/Linux/$TARGET_TRIPLET/$BUILD_TYPE/vcpkg-manifest-install.log"
     cat "$DIR/tools/vcpkg/buildtrees/imgui/install-x64-linux-dbg-out.log"
