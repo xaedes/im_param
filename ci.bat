@@ -109,7 +109,11 @@ if not exist "%DIR%\tools\" (
     mkdir "%DIR%\tools\"
 )
 if not exist "%DIR%\tools\vcpkg\vcpkg" (
-    git clone https://github.com/microsoft/vcpkg.git "%DIR%\\tools\\vcpkg\\"
+    git clone --depth 1 --single-branch --branch imgui-cpp11 https://github.com/xaedes/vcpkg.git "%DIR%\\tools\\vcpkg/"
+    cd "%DIR%\\tools\\vcpkg\\"
+    git pull origin imgui-cpp11
+    cd "%DIR%\\"
+    rem git clone https://github.com/microsoft/vcpkg.git "%DIR%\\tools\\vcpkg\\"
     "%DIR%\tools\vcpkg\bootstrap-vcpkg.bat" -disableMetrics
 )
 goto exit
