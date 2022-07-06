@@ -76,9 +76,9 @@ function_tools() {
     fi
     if [ ! -d "$DIR/tools/vcpkg" ]; then
         # contains patch for imgui, so that C++ 11 is enabled for imgui compilation
-        git clone https://github.com/xaedes/vcpkg.git "$DIR/tools/vcpkg/"
+        git clone --depth 1 --single-branch --branch imgui-cpp11 https://github.com/xaedes/vcpkg.git "$DIR/tools/vcpkg/"
         cd "$DIR/tools/vcpkg/"
-        git pull origin master
+        git pull origin imgui-cpp11
         cd "$DIR/"
         # git clone https://github.com/microsoft/vcpkg.git "$DIR/tools/vcpkg/"
         "$DIR/tools/vcpkg/bootstrap-vcpkg.sh" -disableMetrics
