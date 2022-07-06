@@ -98,12 +98,6 @@ function_build() {
     cmake --version
     echo cmake -G "$CMAKE_GENERATOR" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_TOOLCHAIN_FILE=$DIR/tools/vcpkg/scripts/buildsystems/vcpkg.cmake "$DIR"
     cmake -G "$CMAKE_GENERATOR" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_TOOLCHAIN_FILE=$DIR/tools/vcpkg/scripts/buildsystems/vcpkg.cmake "$DIR"
-    echo "$DIR/tools/vcpkg/buildtrees/imgui/src/v1.88-34c93572a3.clean/CMakeLists.txt"
-    cat "$DIR/tools/vcpkg/buildtrees/imgui/src/v1.88-34c93572a3.clean/CMakeLists.txt"
-    echo "$DIR/build/Linux/$TARGET_TRIPLET/$BUILD_TYPE/vcpkg-manifest-install.log"
-    cat "$DIR/build/Linux/$TARGET_TRIPLET/$BUILD_TYPE/vcpkg-manifest-install.log"
-    echo "$DIR/tools/vcpkg/buildtrees/imgui/install-x64-linux-dbg-out.log"
-    cat "$DIR/tools/vcpkg/buildtrees/imgui/install-x64-linux-dbg-out.log"
     cd "$DIR"
     cmake --build "$DIR/build/Linux/$TARGET_TRIPLET/$BUILD_TYPE"
 }
