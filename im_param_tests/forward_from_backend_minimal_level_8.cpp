@@ -119,7 +119,7 @@ struct Backend
     }
 
     
-    template<class UT, class TH, class... Args>
+    template<class UT, class TH, im_param::enable_if_type_holder<TH> = true, class... Args>
     void work_backend(const char* label, UT& ut, const TH& th, Args&&... args)
     {
         std::cout << "Backend::work_backend('" << label << "', ut, ...)" << "\n";
