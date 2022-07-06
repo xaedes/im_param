@@ -69,9 +69,9 @@ namespace im_param {
     {
         static_assert(is_type_holder<TH>::value == true, "is_type_holder<TH>::value == true");
         template<class... Args>
-        static void spezialization(BE& be, UT& ut, const TH& th, Args&&... args) 
+        static void specialization(BE& be, UT& ut, const TH& th, Args&&... args) 
         {
-            std::cout << "UserLand<BE,UT,TH>::spezialization(BE& be, UT& ut, const TH& th, Args&&... args) " << "\n";
+            std::cout << "UserLand<BE,UT,TH>::specialization(BE& be, UT& ut, const TH& th, Args&&... args) " << "\n";
             Custom<BE,UT,TH>::parameter(be, ut, th, std::forward<Args>(args)...);
         }
     };
@@ -81,7 +81,7 @@ namespace im_param {
     void userland(BE& be, UT& ut, const TH& th, Args&&... args)
     {
         std::cout << "userland(BE& be, UT& ut, const TH& th, Args&&... args)" << "\n";
-        UserLand<BE,UT,TH>::spezialization(be, ut, th, std::forward<Args>(args)...);
+        UserLand<BE,UT,TH>::specialization(be, ut, th, std::forward<Args>(args)...);
     }
     
     // kick off the call chain by going into the backend BE

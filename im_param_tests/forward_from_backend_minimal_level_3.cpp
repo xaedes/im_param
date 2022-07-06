@@ -11,13 +11,13 @@ namespace im_param {
     template<class BE, class UT>
     struct UserLand
     {
-        static void spezialization(BE& be, UT& ut) {}
+        static void specialization(BE& be, UT& ut) {}
     };
     
     template<class BE, class UT>
     void userland(BE& be, UT& ut)
     {
-        UserLand<BE,UT>::spezialization(be, ut);
+        UserLand<BE,UT>::specialization(be, ut);
     }
     
     template<class BE, class UT>
@@ -56,7 +56,7 @@ struct Foo
 namespace im_param {
     
     /*
-    #define BEGIN(be,UT,ut) template<class BE> struct UserLand<BE, UT> { static void spezialization(BE& be, UT& ut)
+    #define BEGIN(be,UT,ut) template<class BE> struct UserLand<BE, UT> { static void specialization(BE& be, UT& ut)
     #define END() };
     
     BEGIN(be, int, val)
@@ -77,7 +77,7 @@ namespace im_param {
     template<class BE>
     struct UserLand<BE, int>
     {
-        static void spezialization(BE& be, int& ut)
+        static void specialization(BE& be, int& ut)
         {
             ut++;
         }
@@ -86,7 +86,7 @@ namespace im_param {
     template<class BE>
     struct UserLand<BE, Foo>
     {
-        static void spezialization(BE& be, Foo& ut)
+        static void specialization(BE& be, Foo& ut)
         {
             im_param::kickoff(be, "val", ut.val);
         }
@@ -102,16 +102,16 @@ int forward_from_backend_minimal_level_3(int argc, char* argv[]) {
     // kickoff 
     //  -> backend 
     //   -> userland 
-    //    -> spezialization 
+    //    -> specialization 
     //     -> kickoff 
     //      -> backend 
     //       -> userland 
-    //        -> spezialization 
+    //        -> specialization 
     //         -> ...
     //     -> kickoff 
     //      -> backend 
     //       -> userland 
-    //        -> spezialization 
+    //        -> specialization 
     //         -> ...
     //
     // context                         | callable
@@ -119,8 +119,8 @@ int forward_from_backend_minimal_level_3(int argc, char* argv[]) {
     // usercode                        | im_param::kickoff, im_param::userland
     // im_param::kickoff               | BE::work_backend
     // BE::work_backend                | im_param::userland, im_param::kickoff
-    // im_param::userland              | UserLand<BE,UT>::spezialization
-    // UserLand<BE,UT>::spezialization | im_param::kickoff
+    // im_param::userland              | UserLand<BE,UT>::specialization
+    // UserLand<BE,UT>::specialization | im_param::kickoff
     // 
     // the difference between im_param::kickoff and im_param::userland is that im_param::kickoff
     // takes additional arguments that can be consumed by the backend

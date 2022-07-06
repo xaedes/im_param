@@ -23,7 +23,7 @@ namespace im_param {
     template<class BE, class UT, class TH>
     struct UserLand
     {
-        static void spezialization(BE& be, UT& ut, const TH& th) 
+        static void specialization(BE& be, UT& ut, const TH& th) 
         {
             Custom<BE,UT,TH>::parameter(be, ut, th);
         }
@@ -33,7 +33,7 @@ namespace im_param {
     template<class BE, class UT, class TH>
     void userland(BE& be, UT& ut, const TH& th)
     {
-        UserLand<BE,UT,TH>::spezialization(be, ut, th);
+        UserLand<BE,UT,TH>::specialization(be, ut, th);
     }
     
     // kick off the call chain by going into the backend BE
