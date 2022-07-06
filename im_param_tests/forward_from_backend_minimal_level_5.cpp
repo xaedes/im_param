@@ -134,8 +134,8 @@ namespace im_param {
 int forward_from_backend_minimal_level_5(int argc, char* argv[]) {
 
     lvl5::Backend backend{};
-    lvl5::Foo<int>::Bar bar{0};
-    ASSERT(bar.val == 0);
+    lvl5::Foo<int>::Bar bar{};
+    bar.val = 0;
     
     lvl5::im_param::parameter(backend, "bar", bar, lvl5::im_param::TypeHolder<lvl5::Foo<int>>());
     ASSERT(bar.val == 1);

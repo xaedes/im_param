@@ -139,8 +139,8 @@ namespace im_param {
 int forward_from_backend_minimal_level_4b(int argc, char* argv[]) {
 
     lvl4b::Backend backend{};
-    lvl4b::Foo foo{0};
-    ASSERT(foo.val == 0);
+    lvl4b::Foo foo{};
+    foo.val = 0;
     
     lvl4b::im_param::parameter(backend, "foo", foo);
     ASSERT(foo.val == 1);

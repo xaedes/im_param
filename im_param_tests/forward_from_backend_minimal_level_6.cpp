@@ -204,11 +204,11 @@ namespace im_param {
 int forward_from_backend_minimal_level_6(int argc, char* argv[]) {
 
     lvl6::Backend backend{};
-    lvl6::Foo<int>::Bar bar{0};
-    ASSERT(bar.val == 0);
-    ASSERT(bar.bar == 0);
-    ASSERT(bar.foo == 0);
-    ASSERT(bar.tagged == 0);
+    lvl6::Foo<int>::Bar bar{};
+    bar.val = 0;
+    bar.bar = 0;
+    bar.foo = 0;
+    bar.tagged = 0;
     lvl6::im_param::parameter(backend, "bar", bar, lvl6::im_param::TypeHolder<lvl6::Foo<int>>());
     ASSERT(bar.val == -1);
     ASSERT(bar.bar == -1);

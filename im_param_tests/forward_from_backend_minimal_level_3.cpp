@@ -126,8 +126,8 @@ int forward_from_backend_minimal_level_3(int argc, char* argv[]) {
     // takes additional arguments that can be consumed by the backend
 
     lvl3::Backend backend{};
-    lvl3::Foo foo{0};
-    ASSERT(foo.val == 0);
+    lvl3::Foo foo{};
+    foo.val = 0;
     
     lvl3::im_param::kickoff(backend, "foo", foo);
     ASSERT(foo.val == 1);

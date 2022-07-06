@@ -107,8 +107,8 @@ int forward_from_backend_minimal_level_4a(int argc, char* argv[]) {
     // Custom<BE,UT>::parameter  | im_param::parameter
 
     lvl4a::Backend backend{};
-    lvl4a::Foo foo{0};
-    ASSERT(foo.val == 0);
+    lvl4a::Foo foo{};
+    foo.val = 0;
     
     lvl4a::im_param::parameter(backend, "foo", foo);
     ASSERT(foo.val == 1);
