@@ -10,6 +10,9 @@ namespace im_param {
 
     template<bool C, class T = void>
     using enable_if_t = typename std::enable_if<C,T>::type;
+
+    template< class T >
+    using remove_pointer_t = typename std::remove_pointer<T>::type;    
     #pragma endregion
 
     #pragma region c++11 implementations of c++17 template logic functions
