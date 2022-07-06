@@ -45,7 +45,9 @@ function_main() {
         "clean")      function_clean;;
         "tools")      function_tools;;
         "build")      function_build;;
+        "b")          function_build;;
         "test")       function_test;;
+        "t")          function_test;;
         "build_test") function_build_test;;
         "-")          function_build_test;;
         "help")       function_help;;
@@ -112,7 +114,8 @@ function_test() {
 }
 function_help() {
     echo "Usage:"
-    echo "$CI_CALL [all|clean|tools|build|test|build_test|-|help]"
+    echo "$CI_CALL [all|clean|tools|b[uild]|t[est]|build_test|-|help]"
+    echo "command \"-\" is alias to \"build_test\""
 }
 
 function_main $@

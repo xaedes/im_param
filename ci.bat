@@ -71,7 +71,9 @@ if [%~1]==[all]         goto all
 if [%~1]==[clean]       goto clean
 if [%~1]==[tools]       goto tools
 if [%~1]==[build]       goto build
+if [%~1]==[b]           goto build
 if [%~1]==[test]        goto test
+if [%~1]==[t]           goto test
 if [%~1]==[build_test]  goto build_test
 if [%~1]==[help]        goto help
 if [%~1]==[-]           goto build_test
@@ -155,8 +157,8 @@ goto exit
 rem ---------------------------------------------------------------------------
 :help
 echo Usage:
-echo %~0 [all^|clean^|tools^|build^|test^|build_test^|-^|help]
-
+echo %~0 [all^|clean^|tools^|b[uild]^|t[est]^|build_test^|-^|help] build_type target_triplet tests_project cmake_generator
+echo command "-" is alias to "build_test"
 rem ---------------------------------------------------------------------------
 :exit
 
