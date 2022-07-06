@@ -57,7 +57,7 @@ namespace im_param {
     template<class BE, class UT, enable_if_t<is_fundamental_type<UT>::value, bool> = true, class... Args>
     void kickoff_fundamental(BE& be, const char* label, UT& ut, Args&&... args)
     {
-        std::cout << "kickoff_fundamental(BE& be, const char* label, UT& ut)" << "\n";
+        std::cout << "kickoff_fundamental(BE& be, const char* label, UT& ut, Args&&... args)" << "\n";
         be.work_backend_fundamental(label, ut, std::forward<Args>(args)...);
     }
 
@@ -113,7 +113,7 @@ namespace im_param {
     template<class BE, class UT, enable_if_t<is_fundamental_type<UT>::value, bool> = true, class... Args>
     void parameter(BE& be, const char* label, UT& ut, Args&&... args)
     {
-        std::cout << "im_param::parameter(BE& be, const char* label, UT& ut)" << "\n";
+        std::cout << "im_param::parameter(BE& be, const char* label, UT& ut, Args&&... args)" << "\n";
 
         kickoff_fundamental(be, label, ut, std::forward<Args>(args)...);
     }
