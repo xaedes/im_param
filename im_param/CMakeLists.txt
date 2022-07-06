@@ -15,6 +15,8 @@ add_library(
     INTERFACE
 )
 
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)
+
 
 target_include_directories(
     ${PROJECT_NAME}

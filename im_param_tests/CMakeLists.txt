@@ -31,6 +31,8 @@ create_test_sourcelist (Tests
 add_executable (${PROJECT_NAME} ${Tests})
 target_link_libraries( ${PROJECT_NAME} PRIVATE im_param )
 
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)
+
 # remove the test driver source file
 set (TestsToRun ${Tests})
 remove (TestsToRun ${PROJECT_NAME}.cpp)
