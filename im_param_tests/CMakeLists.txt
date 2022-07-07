@@ -28,6 +28,7 @@ create_test_sourcelist (Tests
     im_param_foundations_level_07.cpp
     im_param_foundations_level_08.cpp
     im_param_foundations_level_09.cpp
+    im_param_foundations_level_10.cpp
 )
 
 # add the executable
