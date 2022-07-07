@@ -15,19 +15,19 @@ create_test_sourcelist (Tests
     cpp11_templates.cpp
     forward_to_backend.cpp
     # forward_from_backend_minimal.cpp
-    forward_from_backend_minimal_level_00.cpp
-    # forward_from_backend_minimal_level_00a_wont_compile_on_gcc.cpp
-    forward_from_backend_minimal_level_01.cpp
-    forward_from_backend_minimal_level_02.cpp
-    # forward_from_backend_minimal_level_02a_wont_compile_on_gcc.cpp
-    forward_from_backend_minimal_level_03.cpp
-    forward_from_backend_minimal_level_04a.cpp
-    forward_from_backend_minimal_level_04b.cpp
-    forward_from_backend_minimal_level_05.cpp
-    forward_from_backend_minimal_level_06.cpp
-    forward_from_backend_minimal_level_07.cpp
-    forward_from_backend_minimal_level_08.cpp
-    forward_from_backend_minimal_level_09.cpp
+    im_param_foundations_level_00.cpp
+    # im_param_foundations_level_00a_wont_compile_on_gcc.cpp
+    im_param_foundations_level_01.cpp
+    im_param_foundations_level_02.cpp
+    # im_param_foundations_level_02a_wont_compile_on_gcc.cpp
+    im_param_foundations_level_03.cpp
+    im_param_foundations_level_04a.cpp
+    im_param_foundations_level_04b.cpp
+    im_param_foundations_level_05.cpp
+    im_param_foundations_level_06.cpp
+    im_param_foundations_level_07.cpp
+    im_param_foundations_level_08.cpp
+    im_param_foundations_level_09.cpp
 )
 
 # add the executable

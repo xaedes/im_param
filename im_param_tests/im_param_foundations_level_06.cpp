@@ -201,7 +201,7 @@ namespace im_param {
 } // namespace im_param
 } // namespace lvl06
 
-int forward_from_backend_minimal_level_06(int argc, char* argv[]) {
+int im_param_foundations_level_06(int argc, char* argv[]) {
 
     lvl06::Backend backend{};
     lvl06::Foo<int>::Bar bar{};

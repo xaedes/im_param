@@ -136,7 +136,7 @@ namespace im_param {
 } // namespace im_param
 } // namespace lvl04b
 
-int forward_from_backend_minimal_level_04b(int argc, char* argv[]) {
+int im_param_foundations_level_04b(int argc, char* argv[]) {
 
     lvl04b::Backend backend{};
     lvl04b::Foo foo{};

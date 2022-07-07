@@ -32,7 +32,7 @@ void forwarded(float& val)
 
 } // namespace lvl00
 
-int forward_from_backend_minimal_level_00(int argc, char* argv[]) {
+int im_param_foundations_level_00(int argc, char* argv[]) {
     // calling the backend is possible because forwarded specializations are defined
     int i=1;
     lvl00::backend(i);
