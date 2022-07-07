@@ -11,9 +11,6 @@ namespace lvl09 {
 
 namespace im_param {
 
-    template<bool C, class T>
-    using enable_if_t = typename std::enable_if<C,T>::type;
-
     template<bool C, class A, class B>
     using conditional_t = typename std::conditional<C,A,B>::type;
 
@@ -40,10 +37,10 @@ namespace im_param {
 namespace im_param {
 
     template <class T> 
-    using enable_if_fundamental = enable_if_t<is_fundamental_type<T>::value, bool>;
+    using enable_if_fundamental = std::enable_if_t<is_fundamental_type<T>::value, bool>;
 
     template <class T> 
-    using enable_if_type_holder = enable_if_t<is_type_holder<T>::value, bool>;
+    using enable_if_type_holder = std::enable_if_t<is_type_holder<T>::value, bool>;
 
 } // namespace im_param
     

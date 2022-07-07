@@ -9,9 +9,6 @@
 namespace lvl06 {
 namespace im_param {
 
-    template<bool C, class T>
-    using enable_if_t = typename std::enable_if<C,T>::type;
-
     template<bool C, class A, class B>
     using conditional_t = typename std::conditional<C,A,B>::type;
 
@@ -53,7 +50,7 @@ namespace im_param {
     }
     
     // kick off the call chain by going into the backend BE
-    template<class BE, class UT, enable_if_t<is_fundamental_type<UT>::value, bool> = true>
+    template<class BE, class UT, std::enable_if_t<is_fundamental_type<UT>::value, bool> = true>
     void kickoff_fundamental(BE& be, const char* label, UT& ut)
     {
         std::cout << "kickoff_fundamental(BE& be, const char* label, UT& ut)" << "\n";
@@ -108,7 +105,7 @@ namespace im_param {
 
     // `parameter` synonyms
 
-    template<class BE, class UT, enable_if_t<is_fundamental_type<UT>::value, bool> = true>
+    template<class BE, class UT, std::enable_if_t<is_fundamental_type<UT>::value, bool> = true>
     void parameter(BE& be, const char* label, UT& ut)
     {
         std::cout << "im_param::parameter(BE& be, const char* label, UT& ut)" << "\n";

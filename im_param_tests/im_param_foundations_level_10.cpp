@@ -10,16 +10,10 @@ namespace lvl10 {
 
 namespace im_param {
 
-    template<bool C, class T>
-    using enable_if_t = typename std::enable_if<C,T>::type;
-
-    template<bool C, class A, class B>
-    using conditional_t = typename std::conditional<C,A,B>::type;
-
     template<class...> struct conjunction : std::true_type { };
     template<class B1> struct conjunction<B1> : B1 { };
     template<class B1, class... Bn>
-    struct conjunction<B1, Bn...> : conditional_t<bool(B1::value), conjunction<Bn...>, B1> {};
+    struct conjunction<B1, Bn...> : std::conditional_t<bool(B1::value), conjunction<Bn...>, B1> {};
 
     template<class T>
     using is_fundamental_type = conjunction<std::is_integral<T>>;
@@ -48,13 +42,13 @@ namespace im_param {
 namespace im_param {
 
     template <class T> 
-    using enable_if_fundamental = enable_if_t<is_fundamental_type<T>::value, bool>;
+    using enable_if_fundamental = std::enable_if_t<is_fundamental_type<T>::value, bool>;
 
     template <class T> 
-    using enable_if_type_holder = enable_if_t<is_type_holder<T>::value, bool>;
+    using enable_if_type_holder = std::enable_if_t<is_type_holder<T>::value, bool>;
 
     template <class T> 
-    using enable_if_size = enable_if_t<is_size<T>::value, bool>;
+    using enable_if_size = std::enable_if_t<is_size<T>::value, bool>;
 
 } // namespace im_param
     

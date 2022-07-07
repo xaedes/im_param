@@ -40,7 +40,7 @@ namespace im_param {
             typename value_type,
             typename size_type = std::size_t,
             class... Args,
-            enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
+            std::enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
         >
         JsonSerializerBackend& parameter(const std::string& name, value_type* ptr, size_type count, Args... args)
         {
@@ -58,7 +58,7 @@ namespace im_param {
         template<
             typename value_type,
             class... Args,
-            enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
+            std::enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
         >
         JsonSerializerBackend& parameter(const std::string& name, value_type& value, Args... args)
         {
@@ -73,7 +73,7 @@ namespace im_param {
             typename T, 
             typename U, 
             class... Args, 
-            enable_if_t<!Backend::is_base_value<T>::value, bool> = true
+            std::enable_if_t<!Backend::is_base_value<T>::value, bool> = true
         >
         JsonSerializerBackend& parameter(
             const std::string& name, T& params, const TypeHolder<U>& typeholder, Args... args)
@@ -96,7 +96,7 @@ namespace im_param {
             class inserter_iterator_type,
             class type_holder_type,
             class... Args,
-            enable_if_t<!Backend::is_base_value<value_type>::value, bool> = true
+            std::enable_if_t<!Backend::is_base_value<value_type>::value, bool> = true
         >
         JsonSerializerBackend& parameter(
             const std::string& name, 
@@ -129,9 +129,9 @@ namespace im_param {
             class callback_type,
             class size_type = std::size_t,
             class... Args,
-            enable_if_t<!Backend::is_type_holder<callback_type>::value, bool> = true
-            // enable_if_t<Backend::is_base_value<return_type<callback_type>>::value, bool> = true
-            // enable_if_t<!Backend::is_base_value<value_type>::value, bool> = true
+            std::enable_if_t<!Backend::is_type_holder<callback_type>::value, bool> = true
+            // std::enable_if_t<Backend::is_base_value<return_type<callback_type>>::value, bool> = true
+            // std::enable_if_t<!Backend::is_base_value<value_type>::value, bool> = true
         >
         JsonSerializerBackend& parameter(
             const std::string& name, 
@@ -166,7 +166,7 @@ namespace im_param {
             class value_iterator_type,
             class inserter_iterator_type,
             class... Args,
-            enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
+            std::enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
         >
         JsonSerializerBackend& parameter(
             const std::string& name, 
@@ -272,7 +272,7 @@ namespace im_param {
             typename value_type,
             typename size_type = std::size_t,
             class... Args,
-            enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
+            std::enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
         >
         JsonDeserializerBackend& parameter(const std::string& name, value_type* ptr, size_type num_channels, Args... args)
         {
@@ -291,7 +291,7 @@ namespace im_param {
         template<
             typename value_type,
             class... Args,
-            enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
+            std::enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
         >
         JsonDeserializerBackend& parameter(const std::string& name, value_type& value, Args... args)
         {
@@ -312,7 +312,7 @@ namespace im_param {
 
         #pragma region specializations for named parameter container
         // JsonDeserializerBackend: named parameter container
-        template<typename T, typename U, class... Args, enable_if_t<!Backend::is_base_value<T>::value, bool> = true>
+        template<typename T, typename U, class... Args, std::enable_if_t<!Backend::is_base_value<T>::value, bool> = true>
         JsonDeserializerBackend& parameter(const std::string& name, T& params, const U& typeholder, Args... args)
         {
             if (stack.back().count(name))
@@ -335,7 +335,7 @@ namespace im_param {
             class inserter_iterator_type,
             class type_holder_type,
             class... Args,
-            enable_if_t<!Backend::is_base_value<value_type>::value, bool> = true
+            std::enable_if_t<!Backend::is_base_value<value_type>::value, bool> = true
         >
         JsonDeserializerBackend& parameter(
             const std::string& name, 
@@ -386,10 +386,10 @@ namespace im_param {
             class callback_type,
             class size_type = std::size_t,
             class... Args,
-            enable_if_t<!Backend::is_type_holder<callback_type>::value, bool> = true
+            std::enable_if_t<!Backend::is_type_holder<callback_type>::value, bool> = true
 
-            // enable_if_t<Backend::is_base_value<return_type<callback_type>>::value, bool> = true
-            // enable_if_t<!Backend::is_base_value<value_type>::value, bool> = true
+            // std::enable_if_t<Backend::is_base_value<return_type<callback_type>>::value, bool> = true
+            // std::enable_if_t<!Backend::is_base_value<value_type>::value, bool> = true
         >
         JsonDeserializerBackend& parameter(
             const std::string& name, 
@@ -437,7 +437,7 @@ namespace im_param {
             class value_iterator_type,
             class inserter_iterator_type,
             class... Args,
-            enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
+            std::enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
         >
         JsonDeserializerBackend& parameter(
             const std::string& name, 
@@ -505,7 +505,7 @@ namespace im_param {
             typename value_type,
             typename size_type = std::size_t,
             class... Args,
-            enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
+            std::enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
         >
         JsonStringStreamSerializerBackend& parameter(const std::string& name, value_type* ptr, size_type count, Args... args)
         {
@@ -532,7 +532,7 @@ namespace im_param {
         template<
             typename value_type,
             class... Args,
-            enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
+            std::enable_if_t<Backend::is_base_value<value_type>::value, bool> = true
         >
         JsonStringStreamSerializerBackend& parameter(const std::string& name, value_type& value, Args... args)
         {
@@ -546,7 +546,7 @@ namespace im_param {
         #pragma endregion
 
         #pragma region specializations for named parameter container
-        template<typename T, typename U, enable_if_t<!Backend::is_base_value<T>::value, bool> = true>
+        template<typename T, typename U, std::enable_if_t<!Backend::is_base_value<T>::value, bool> = true>
         JsonStringStreamSerializerBackend& parameter(const std::string& name, T& params, const U& typeholder, HierarchyType hierarchy_type = HierarchyType::Tree)
         {
             if (stack.back() > 0)  sstream << ", \n";
