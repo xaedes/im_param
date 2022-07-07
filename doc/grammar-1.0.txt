@@ -1,0 +1,75 @@
+    // named parameter multi channel values (floats, ints, bools, strings, etc)
+    // named parameter value (floats, ints, bools, strings, etc)
+    // named parameter group
+    // named list of parameter multi channel values (floats, ints, bools, strings, etc)
+    // named list of parameter values (floats, ints, bools, strings, etc)
+    // named list of parameter groups
+
+Functional BNF to describe all kinds of data:
+
+
+<data>                                  := <fundamental> 
+                                         | <string>  
+                                         | <pointer-of <data>> 
+                                         | <pointer> 
+                                         | <reference-of <data>> 
+                                         | <reference> 
+                                         | <const <data>> 
+                                         | <map-by-of <map-key> <data>> 
+                                         | <map-of <data>> 
+                                         | <map-by <map-key>> 
+                                         | <map> 
+                                         | <list-of <data>> 
+                                         | <list> 
+                                         | <array-of <data> <size>> 
+                                         | <array <size>
+
+<fundamental>                                 := <unsigned-integer> |  <integer> | <floating-point> | <bool> 
+<size>                                        := <unsigned-integer>
+<unsigned-integer>                            := <"uint8_t"> | <"uint16_t"> | <"uint32_t"> | <"uint64_t">
+<signed-integer>                              := <"int8_t"> | <"int16_t"> | <"int32_t"> | <"int64_t">
+<floating-point>                              := <"float"> | <"double">
+<pointer-of $type:<data>>                     := <"$type*">
+<pointer>                                     := <pointer-of <data>>
+<reference-of $type:<data>>                   := <"$type&">
+<reference>                                   := <reference-of <data>>
+<const $arg:<data>>                           := <"const $arg">
+<string>                                      := <stdstring> | <cstring> 
+<map-by-of $key:<map-key> $value:<data>>      := [<map-item $key $value>]
+<map-by $key:<map-key>>                       := <map-by-of $key <data>>
+<map-of $value:<data>>                        := <map-by-of <map-key-default> $value>
+<map-key-default>                             := <string>
+<map-key>                                     := <hashable>
+<map-item $key:<map-key> $value:<data>>       := ($key, $value)
+<hashable>                                    := <fundamental> | <string>
+<map>                                         := <map-by-of <map-key-default> <data>>
+<list-of $value:<data>>                       := [<list-entry $value>]
+<list>                                        := <list-of <data>>
+<list-entry $value:<data>>                    := $value
+<array-of $type:<data> $len:<size>>           := ["$type[$len]"]
+<array $len:<size>>                           := <array-of <data> $len>
+
+<custom $type> := <map>
+<kickoff-custom $type:<custom>> := <backend-custom $type>
+<backend-custom $type:<custom>> := <backend-pre-custom $type>, <call-custom $type>, <backend-post-custom $type>
+<call-custom $type> := <custom $type>
+
+<map> { "foo" }
+
+map                                               <-- UserLand::specialization
+
+map_entry__with_fundamental                       <-- kickoff_fundamental
+map_entry__with_fundamental_ndarray               <-- 
+map_entry__with_ndarray_of_<fundamental|map|list> <-- 
+map_entry__with_map                               <-- kickoff
+map_entry__with_list                              <-- 
+
+map_entry_with_list_of_fundamental
+map_entry_with_list_of_fundamental_ndarray
+map_entry_with_list_of_map
+
+list_entry__with_fundamental
+list_entry__with_fundamental_ndarray
+list_entry__with_map
+list_entry__with_list
+
