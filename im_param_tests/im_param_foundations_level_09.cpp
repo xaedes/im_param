@@ -142,7 +142,7 @@ namespace im_param {
     template<class BE, class UT, enable_if_fundamental<UT> = true, class... Args>
     void map_item(BE& be, const char* label, UT& ut, Args&&... args)
     {
-        std::cout << "im_param::parameter(BE& be, const char* label, UT& ut, Args&&... args)" << "\n";
+        std::cout << "im_param::map_item(BE& be, const char* label, UT& ut, Args&&... args)" << "\n";
 
         map_item_fundamental(be, label, ut, std::forward<Args>(args)...);
     }
@@ -150,7 +150,7 @@ namespace im_param {
     template<class BE, class UT, class TH, enable_if_type_holder<TH> = true, class... Args>
     void map_item(BE& be, const char* label, UT& ut, const TH& th, Args&&... args)
     {
-        std::cout << "im_param::parameter(BE& be, const char* label, UT& ut, const TH& th, Args&&... args)" << "\n";
+        std::cout << "im_param::map_item(BE& be, const char* label, UT& ut, const TH& th, Args&&... args)" << "\n";
 
         map_item_map(be, label, ut, th, std::forward<Args>(args)...);
     }
