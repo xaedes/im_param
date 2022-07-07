@@ -7,7 +7,7 @@
 // rename functions according to im_param data grammar semantics
 // see doc/grammar-1.0.txt
 
-namespace lvl9 {
+namespace lvl09 {
 
 namespace im_param {
 
@@ -227,14 +227,14 @@ namespace im_param {
     };
     
 } // namespace im_param
-} // namespace lvl9
+} // namespace lvl09
 
-int forward_from_backend_minimal_level_9(int argc, char* argv[]) {
+int forward_from_backend_minimal_level_09(int argc, char* argv[]) {
 
-    lvl9::Backend backend{};
-    lvl9::Foo<int>::Bar bar{};
-    lvl9::Foo<int>::Bar min{};
-    lvl9::Foo<int>::Bar max{};
+    lvl09::Backend backend{};
+    lvl09::Foo<int>::Bar bar{};
+    lvl09::Foo<int>::Bar min{};
+    lvl09::Foo<int>::Bar max{};
     bar.foo = -200;
     bar.bar = +200;
     bar.baz = +200;
@@ -246,7 +246,7 @@ int forward_from_backend_minimal_level_9(int argc, char* argv[]) {
     max.foo = +100;
     max.bar = +100;
     max.baz =  +10;
-    lvl9::im_param::parameter(backend, "bar", bar, lvl9::im_param::TypeHolder<lvl9::Foo<int>>(), min, max);
+    lvl09::im_param::parameter(backend, "bar", bar, lvl09::im_param::TypeHolder<lvl09::Foo<int>>(), min, max);
     ASSERT(bar.foo == -100);
     ASSERT(bar.bar == +100);
     ASSERT(bar.baz == +10);

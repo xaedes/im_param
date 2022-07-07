@@ -2,7 +2,7 @@
 
 #include "tests_common.h"
 
-namespace lvl2 {
+namespace lvl02 {
 
 #pragma region part of backend
 
@@ -54,32 +54,32 @@ void forwarded(U u, MyFloat& val)
 }
 #pragma endregion
 
-} // namespace lvl2
+} // namespace lvl02
 
-int forward_from_backend_minimal_level_2(int argc, char* argv[]) {
+int forward_from_backend_minimal_level_02(int argc, char* argv[]) {
     // this makes it possible to forward additional templated arguments without requiring function definitions in custom types.
     
     float uf = 2.0f;
     double ud = -2.0;
     {
-        lvl2::MyInt i{0};
-        lvl2::backend(uf, i);
+        lvl02::MyInt i{0};
+        lvl02::backend(uf, i);
         ASSERT(i.val == 2);
     }
     {
-        lvl2::MyInt i{0};
-        lvl2::backend(ud, i);
+        lvl02::MyInt i{0};
+        lvl02::backend(ud, i);
         ASSERT(i.val == -2);
     }
 
     {
-        lvl2::MyFloat f{2.0f};
-        lvl2::backend(uf, f);
+        lvl02::MyFloat f{2.0f};
+        lvl02::backend(uf, f);
         ASSERT(f.val == 4.0f);
     }
     {
-        lvl2::MyFloat f{2.0f};
-        lvl2::backend(ud, f);
+        lvl02::MyFloat f{2.0f};
+        lvl02::backend(ud, f);
         ASSERT(f.val == -4.0f);
     }
 

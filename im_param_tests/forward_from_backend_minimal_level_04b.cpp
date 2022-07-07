@@ -6,7 +6,7 @@
 // provide "parameter" synonyms using wrapper functions and types
 // both naming variants can be used in userland code
 
-namespace lvl4b {
+namespace lvl04b {
 namespace im_param {
     
     template<class BE, class UT>
@@ -134,26 +134,26 @@ namespace im_param {
     };
 
 } // namespace im_param
-} // namespace lvl4b
+} // namespace lvl04b
 
-int forward_from_backend_minimal_level_4b(int argc, char* argv[]) {
+int forward_from_backend_minimal_level_04b(int argc, char* argv[]) {
 
-    lvl4b::Backend backend{};
-    lvl4b::Foo foo{};
+    lvl04b::Backend backend{};
+    lvl04b::Foo foo{};
     foo.val = 0;
     
-    lvl4b::im_param::parameter(backend, "foo", foo);
+    lvl04b::im_param::parameter(backend, "foo", foo);
     ASSERT(foo.val == 1);
     ASSERT(backend.called_with_ut == 1);
     ASSERT(backend.called_with_int == 1);
     
     int x=1;
     
-    lvl4b::im_param::parameter(backend, "x", x);
+    lvl04b::im_param::parameter(backend, "x", x);
     ASSERT(x == 2);
     ASSERT(backend.called_with_int == 2);
     
-    lvl4b::im_param::parameter(backend, "x", x);
+    lvl04b::im_param::parameter(backend, "x", x);
     ASSERT(x == 3);
     ASSERT(backend.called_with_int == 3);
 

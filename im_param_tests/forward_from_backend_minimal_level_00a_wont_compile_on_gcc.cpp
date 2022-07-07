@@ -13,7 +13,7 @@
 #include <iostream>
 #include <type_traits>
 
-namespace lvl0a {
+namespace lvl00a {
 
 template<class U, class T>
 void forwarded(U user, T val);
@@ -31,12 +31,12 @@ void forwarded(U user, int val)
     std::cout << "forwarded" << user << "\n";
 }
 
-} // namespace lvl0a
+} // namespace lvl00a
 
-int forward_from_backend_minimal_level_0a_wont_compile_on_gcc(int argc, char* argv[]) {
+int forward_from_backend_minimal_level_00a_wont_compile_on_gcc(int argc, char* argv[]) {
     float u;
     int i=1;
-    lvl0a::backend(u, i);
+    lvl00a::backend(u, i);
 
     return 0;
 }

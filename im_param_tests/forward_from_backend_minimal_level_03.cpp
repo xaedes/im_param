@@ -4,7 +4,7 @@
 #include "tests_common.h"
 
 
-namespace lvl3 {
+namespace lvl03 {
 
 namespace im_param {
     
@@ -94,9 +94,9 @@ namespace im_param {
     //*/
 } // namespace im_param
 
-} // namespace lvl3
+} // namespace lvl03
 
-int forward_from_backend_minimal_level_3(int argc, char* argv[]) {
+int forward_from_backend_minimal_level_03(int argc, char* argv[]) {
     // a call chain can look like this:
     // 
     // kickoff 
@@ -125,22 +125,22 @@ int forward_from_backend_minimal_level_3(int argc, char* argv[]) {
     // the difference between im_param::kickoff and im_param::userland is that im_param::kickoff
     // takes additional arguments that can be consumed by the backend
 
-    lvl3::Backend backend{};
-    lvl3::Foo foo{};
+    lvl03::Backend backend{};
+    lvl03::Foo foo{};
     foo.val = 0;
     
-    lvl3::im_param::kickoff(backend, "foo", foo);
+    lvl03::im_param::kickoff(backend, "foo", foo);
     ASSERT(foo.val == 1);
     ASSERT(backend.called_with_ut == 1);
     ASSERT(backend.called_with_int == 1);
     
     int x=1;
     
-    lvl3::im_param::kickoff(backend, "x", x);
+    lvl03::im_param::kickoff(backend, "x", x);
     ASSERT(x == 2);
     ASSERT(backend.called_with_int == 2);
     
-    lvl3::im_param::kickoff(backend, "x", x);
+    lvl03::im_param::kickoff(backend, "x", x);
     ASSERT(x == 3);
     ASSERT(backend.called_with_int == 3);
 

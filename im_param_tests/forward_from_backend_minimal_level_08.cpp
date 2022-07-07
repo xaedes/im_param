@@ -6,7 +6,7 @@
 
 // add additional templated Args to type-holder-functions
 
-namespace lvl8 {
+namespace lvl08 {
 
 namespace im_param {
 
@@ -197,14 +197,14 @@ namespace im_param {
     };
     
 } // namespace im_param
-} // namespace lvl8
+} // namespace lvl08
 
-int forward_from_backend_minimal_level_8(int argc, char* argv[]) {
+int forward_from_backend_minimal_level_08(int argc, char* argv[]) {
 
-    lvl8::Backend backend{};
-    lvl8::Foo<int>::Bar bar{};
-    lvl8::Foo<int>::Bar min{};
-    lvl8::Foo<int>::Bar max{};
+    lvl08::Backend backend{};
+    lvl08::Foo<int>::Bar bar{};
+    lvl08::Foo<int>::Bar min{};
+    lvl08::Foo<int>::Bar max{};
     bar.foo = -200;
     bar.bar = +200;
     bar.baz = +200;
@@ -216,7 +216,7 @@ int forward_from_backend_minimal_level_8(int argc, char* argv[]) {
     max.foo = +100;
     max.bar = +100;
     max.baz =  +10;
-    lvl8::im_param::parameter(backend, "bar", bar, lvl8::im_param::TypeHolder<lvl8::Foo<int>>(), min, max);
+    lvl08::im_param::parameter(backend, "bar", bar, lvl08::im_param::TypeHolder<lvl08::Foo<int>>(), min, max);
     ASSERT(bar.foo == -100);
     ASSERT(bar.bar == +100);
     ASSERT(bar.baz == +10);

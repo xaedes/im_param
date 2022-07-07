@@ -6,7 +6,7 @@
 
 // add functions and overloads for fundamental types and demonstration of tagged typeholders
 
-namespace lvl6 {
+namespace lvl06 {
 namespace im_param {
 
     template<bool C, class T>
@@ -199,17 +199,17 @@ namespace im_param {
     };
     
 } // namespace im_param
-} // namespace lvl6
+} // namespace lvl06
 
-int forward_from_backend_minimal_level_6(int argc, char* argv[]) {
+int forward_from_backend_minimal_level_06(int argc, char* argv[]) {
 
-    lvl6::Backend backend{};
-    lvl6::Foo<int>::Bar bar{};
+    lvl06::Backend backend{};
+    lvl06::Foo<int>::Bar bar{};
     bar.val = 0;
     bar.bar = 0;
     bar.foo = 0;
     bar.tagged = 0;
-    lvl6::im_param::parameter(backend, "bar", bar, lvl6::im_param::TypeHolder<lvl6::Foo<int>>());
+    lvl06::im_param::parameter(backend, "bar", bar, lvl06::im_param::TypeHolder<lvl06::Foo<int>>());
     ASSERT(bar.val == -1);
     ASSERT(bar.bar == -1);
     ASSERT(bar.foo == +1);

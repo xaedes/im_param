@@ -33,7 +33,7 @@
 
 #include "tests_common.h"
 
-namespace lvl2a {
+namespace lvl02a {
 
 #pragma region part of backend
 
@@ -66,9 +66,9 @@ void forwarded(U u, int& val)
 #pragma endregion
 
 
-} // namespace lvl2a
+} // namespace lvl02a
 
-int forward_from_backend_minimal_level_2a_wont_compile_on_gcc(int argc, char* argv[]) {
+int forward_from_backend_minimal_level_02a_wont_compile_on_gcc(int argc, char* argv[]) {
 
     // this makes it possible to forward additional templated arguments without requiring function definitions in custom types.
     
@@ -77,13 +77,13 @@ int forward_from_backend_minimal_level_2a_wont_compile_on_gcc(int argc, char* ar
     
     {
         int integer{0};
-        lvl2a::backend(uf, integer);
+        lvl02a::backend(uf, integer);
         ASSERT(integer == 2);
     }
 
     {
         int integer{0};
-        lvl2a::backend(ud, integer);
+        lvl02a::backend(ud, integer);
         ASSERT(integer == -2);
     }
     

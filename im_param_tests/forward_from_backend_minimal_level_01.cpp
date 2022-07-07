@@ -2,7 +2,7 @@
 
 #include "tests_common.h"
 
-namespace lvl1 {
+namespace lvl01 {
 
 #pragma region part of backend
 template<class U, class T>
@@ -35,9 +35,9 @@ struct MyFloat
 };
 #pragma endregion
 
-} // namespace lvl1
+} // namespace lvl01
 
-int forward_from_backend_minimal_level_1(int argc, char* argv[]) {
+int forward_from_backend_minimal_level_01(int argc, char* argv[]) {
     // this makes it possible to forward additional templated arguments.
     // a big disadvantage in this formulation is that it requires function definitions in the custom types.
     // the idea of im_param is that you can provide definitions for any custom type, whether 
@@ -46,24 +46,24 @@ int forward_from_backend_minimal_level_1(int argc, char* argv[]) {
     float uf = 2.0f;
     double ud = -2.0;
     {
-        lvl1::MyInt i{0};
-        lvl1::backend(uf, i);
+        lvl01::MyInt i{0};
+        lvl01::backend(uf, i);
         ASSERT(i.val == 2);
     }
     {
-        lvl1::MyInt i{0};
-        lvl1::backend(ud, i);
+        lvl01::MyInt i{0};
+        lvl01::backend(ud, i);
         ASSERT(i.val == -2);
     }
 
     {
-        lvl1::MyFloat f{2.0f};
-        lvl1::backend(uf, f);
+        lvl01::MyFloat f{2.0f};
+        lvl01::backend(uf, f);
         ASSERT(f.val == 4.0f);
     }
     {
-        lvl1::MyFloat f{2.0f};
-        lvl1::backend(ud, f);
+        lvl01::MyFloat f{2.0f};
+        lvl01::backend(ud, f);
         ASSERT(f.val == -4.0f);
     }
 

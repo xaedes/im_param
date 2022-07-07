@@ -7,7 +7,7 @@
 // add additional templated Args to fundamental-type-functions
 // these can e.g. be used to pass min and max values to the backend.
 
-namespace lvl7 {
+namespace lvl07 {
 namespace im_param {
 
     template<bool C, class T>
@@ -173,16 +173,16 @@ namespace im_param {
     };
     
 } // namespace im_param
-} // namespace lvl7
+} // namespace lvl07
 
-int forward_from_backend_minimal_level_7(int argc, char* argv[]) {
+int forward_from_backend_minimal_level_07(int argc, char* argv[]) {
 
-    lvl7::Backend backend{};
-    lvl7::Foo<int>::Bar bar{};
+    lvl07::Backend backend{};
+    lvl07::Foo<int>::Bar bar{};
     bar.foo = -200;
     bar.bar = +200;
     bar.baz = +200;
-    lvl7::im_param::parameter(backend, "bar", bar, lvl7::im_param::TypeHolder<lvl7::Foo<int>>());
+    lvl07::im_param::parameter(backend, "bar", bar, lvl07::im_param::TypeHolder<lvl07::Foo<int>>());
     ASSERT(bar.foo == -100);
     ASSERT(bar.bar == +100);
     ASSERT(bar.baz == +10);
