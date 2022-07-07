@@ -1,12 +1,15 @@
-    // named parameter multi channel values (floats, ints, bools, strings, etc)
-    // named parameter value (floats, ints, bools, strings, etc)
-    // named parameter group
-    // named list of parameter multi channel values (floats, ints, bools, strings, etc)
-    // named list of parameter values (floats, ints, bools, strings, etc)
-    // named list of parameter groups
+original semantics of im_param::parameter functions:
+
+ - named parameter multi channel values (floats, ints, bools, strings, etc)
+ - named parameter value (floats, ints, bools, strings, etc)
+ - named parameter group
+ - named list of parameter multi channel values (floats, ints, bools, strings, etc)
+ - named list of parameter values (floats, ints, bools, strings, etc)
+ - named list of parameter groups
+
+----
 
 Functional BNF to describe all kinds of data:
-
 
 <data>                                  := <fundamental> 
                                          | <string>  
@@ -49,12 +52,15 @@ Functional BNF to describe all kinds of data:
 <array-of $type:<data> $len:<size>>           := ["$type[$len]"]
 <array $len:<size>>                           := <array-of <data> $len>
 
+---- 
+
 <custom $type> := <map>
 <kickoff-custom $type:<custom>> := <backend-custom $type>
 <backend-custom $type:<custom>> := <backend-pre-custom $type>, <call-custom $type>, <backend-post-custom $type>
 <call-custom $type> := <custom $type>
 
-<map> { "foo" }
+----
+
 
 map                                               <-- UserLand::specialization
 
