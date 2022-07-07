@@ -27,6 +27,7 @@ create_test_sourcelist (Tests
     forward_from_backend_minimal_level_6.cpp
     forward_from_backend_minimal_level_7.cpp
     forward_from_backend_minimal_level_8.cpp
+    forward_from_backend_minimal_level_9.cpp
 )
 
 # add the executable
