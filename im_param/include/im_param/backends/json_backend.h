@@ -417,7 +417,7 @@ namespace im_param {
                     // reuse old items (they may contain important data that is not processed by this call)
                     value_type* value = (i < old_items.size()) ? &(old_items[i]) : &empty_value;
                     auto* ptr = callback_get_first_val(*value);
-                    using base_value_type = remove_pointer_t<decltype(ptr)>;
+                    using base_value_type = std::remove_pointer_t<decltype(ptr)>;
                     changed |= (deserialize_base_values<base_value_type>(deserialized_array[i], ptr, num_channels));
                     *inserter = *value;
                     ++inserter;
