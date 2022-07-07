@@ -35,7 +35,7 @@ create_test_sourcelist (Tests
 add_executable (${PROJECT_NAME} ${Tests})
 target_link_libraries( ${PROJECT_NAME} PRIVATE im_param )
 
-target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_11)
+target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_14)
 
 # remove the test driver source file
 set (TestsToRun ${Tests})

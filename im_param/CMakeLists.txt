@@ -15,7 +15,7 @@ add_library(
     INTERFACE
 )
 
-target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_11)
+target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_14)
 
 
 target_include_directories(
