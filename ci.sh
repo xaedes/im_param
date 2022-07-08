@@ -108,12 +108,13 @@ function_build() {
         fi
     fi
     cd "$DIR"
+    RESULT_CMAKE_BUILD=1
     if [ $RESULT_OF_CMAKE_GEN -eq 0 ]; then
         cmake --build "$DIR/build/Linux/$TARGET_TRIPLET/$BUILD_TYPE"
         RESULT_CMAKE_BUILD=$?
     fi
     echo RESULT_CMAKE_BUILD: $RESULT_CMAKE_BUILD
-
+    exit $RESULT_CMAKE_BUILD
 }
 function_test() {
     echo "Testing..."
