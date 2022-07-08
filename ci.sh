@@ -102,7 +102,7 @@ function_build() {
     cmake -G "$CMAKE_GENERATOR" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_TOOLCHAIN_FILE=$DIR/tools/vcpkg/scripts/buildsystems/vcpkg.cmake "$DIR"
     RESULT_OF_CMAKE_GEN=$?
     echo RESULT_OF_CMAKE_GEN: $RESULT_OF_CMAKE_GEN
-    if [ $RESULT_OF_CMAKE_GEN -neq 0 ]; then
+    if [ $RESULT_OF_CMAKE_GEN -ne 0 ]; then
         if [ -f "vcpkg-manifest-install.log" ]; then
             cat "vcpkg-manifest-install.log"
         fi
