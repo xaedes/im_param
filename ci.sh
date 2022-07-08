@@ -100,8 +100,18 @@ function_build() {
     cmake --version
     echo cmake -G "$CMAKE_GENERATOR" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_TOOLCHAIN_FILE=$DIR/tools/vcpkg/scripts/buildsystems/vcpkg.cmake "$DIR"
     cmake -G "$CMAKE_GENERATOR" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_TOOLCHAIN_FILE=$DIR/tools/vcpkg/scripts/buildsystems/vcpkg.cmake "$DIR"
+    RESULT_OF_CMAKE_GEN=$?
+    if [ $RESULT_OF_CMAKE_GEN -neq 0 ]; then
+        if [ -f "vcpkg-manifest-install.log" ]; then
+            cat "vcpkg-manifest-install.log"
+        fi
+    fi
     cd "$DIR"
-    cmake --build "$DIR/build/Linux/$TARGET_TRIPLET/$BUILD_TYPE"
+    if [ $RESULT_OF_CMAKE_GEN -eq 0 ]; then
+        cmake --build "$DIR/build/Linux/$TARGET_TRIPLET/$BUILD_TYPE"
+        RESULT_CMAKE_BUILD=$?
+    fi
+
 }
 function_test() {
     echo "Testing..."
